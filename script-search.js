@@ -28,7 +28,6 @@ const playAudio = (num, event) => {
 /* --- プレイヤーを埋め込む関数 --- */
 const appendPlayer = parent => {
 	/* プレイヤー追加済みdivを除外 */
-	console.log('parent', parent);
 	if (parent.querySelectorAll('.cmn_thumb_L').length > 1) return;
 	/* 素材種別を判定 */
 	let thumb_url = parent.querySelector('div.cmn_thumb_L > a > img').getAttribute('src');
@@ -40,8 +39,6 @@ const appendPlayer = parent => {
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
 	if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
-	console.log('thumb_id' , thumb_id);
-	console.log('thumb_url', thumb_url);
 	/* Audioを用意 */
 	let audio_obj     = new Audio();
 	audio_obj.volume  = ista_volume;
@@ -51,12 +48,12 @@ const appendPlayer = parent => {
 	/* テキストリンクをdivに入れて追加 */
 	let div_link = document.createElement('div');
 	let a_link   = document.createElement('a');
-	div_link.classList.add('cmn_thumb_L');
+	div_link.classList.add('ista_cmn_player');
 	a_link.innerHTML = '試聴';
 	a_link.href      = 'javascript:void(0)';
 	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1));
 	div_link.appendChild(a_link);
-	parent.appendChild(div_link);
+	parent.querySelector('.cmn_thumb_L').appendChild(div_link);
 	ista_audio_link.push(a_link);
 };
 

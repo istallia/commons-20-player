@@ -12,7 +12,8 @@
 	"content_scripts" : [
 		{
 			"matches" : ["http://commons.nicovideo.jp/search/*", "https://commons.nicovideo.jp/search/*"],
-			"js"      : ["script-search.js"]
+			"js"      : ["script-search.js"],
+			"css"     : ["style-search.css"]
 		},
 		{
 			"matches" : ["http://commons.nicovideo.jp/material/*", "https://commons.nicovideo.jp/material/*"],

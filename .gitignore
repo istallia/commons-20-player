@@ -3,6 +3,7 @@
 SS_*.png
 
 # --- 個人メモ
+*.apd
 アイデア_*.txt
 アイデア_*.md
 test_*.js

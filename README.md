@@ -14,11 +14,11 @@
 ## 具体的な動作
 + クラス`cmn_thumb_frm`の要素がそれぞれの素材のカード。プレイヤーのdivにクラス`cmn_thumb_L`を付けて`appendChild()`する
 + 元々の`div.cmn_thumb_frm > div.cmn_thumb_L > a > img`のsrcの末尾が`audio01.gif`ならBGM、00や02ならSE扱い
-+ 再生/停止ボタンはbase64でハードコーディング
++ 再生/停止ボタンはbase64でハードコーディング -> v0.1.0ではテキストリンク？
++ 音量は0～100、5刻み、SEとBGMの2系統
 + 音量保存はcontent-script側のlocalStorageに保管、調整時はpopup側から`chrome.tabs.sendMessage()`する
 	+ http://ogatism.jp/post/chrome_ext_4
-+ 音量は音量は0～100、5刻み。BGM、SE、マスターの3系統
-+ オプション(popup)でBGMとSEのプリロードをOn/Off可能
++ オプション(popup)でBGMとSEのプリロードをOn/Off可能 (実装中止。いらないと思うので)
 	+ Offのほうがコモンズのシステムに優しいが、Onだと不安定な回線でも安定して次々と視聴できる
 + Audioオブジェクトについてはここ: https://medium.com/@bbxxuw/mp3をjsで再生制御する-36edffb28041
 + Auto Pager系拡張機能を利用している場合、読み込み時に1度動作させるだけでは続きに反映できない。オプションで用意

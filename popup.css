@@ -1,0 +1,6 @@
+body {
+	width : 240px;
+}
+input[type="range"] {
+	width : 97%;
+}

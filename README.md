@@ -18,6 +18,8 @@
 + 音量は0～100、5刻み、SEとBGMの2系統
 + 音量保存はcontent-script側のlocalStorageに保管、調整時はpopup側から`chrome.tabs.sendMessage()`する
 	+ http://ogatism.jp/post/chrome_ext_4
+	+ 訂正。popup側に保存。でないとコモンズのページ以外で設定できなくなる
+	+ Content-ScriptからPopupに送るならこれ: https://pastak.hatenablog.com/entry/2014/08/13/020226
 + オプション(popup)でBGMとSEのプリロードをOn/Off可能 (実装中止。いらないと思うので)
 	+ Offのほうがコモンズのシステムに優しいが、Onだと不安定な回線でも安定して次々と視聴できる
 + Audioオブジェクトについてはここ: https://medium.com/@bbxxuw/mp3をjsで再生制御する-36edffb28041

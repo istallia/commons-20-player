@@ -1,6 +1,13 @@
 /* --- 各種パラメータの読み込み＆初期設定 --- */
-let ista_volume_bgm      = Number(localStorage.getItem('ista_volume_bgm') || '1');
-let ista_volume_se       = Number(localStorage.getItem('ista_volume_se') || '1');
+if (typeof browser === 'undefined') browser = chrome;
+if (sessionStorage.getItem('ista_volume_bgm') === null) {
+	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
+		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
+		sessionStorage.setItem('ista_volume_se' , params['volume_se']);
+	});
+}
+let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm'));
+let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se'));
 let ista_audio_obj       = [];
 let ista_audio_link      = [];
 let ista_last_play_index = null;
@@ -8,20 +15,27 @@ let ista_last_play_index = null;
 
 /* --- 指定番号の音声を再生する関数 --- */
 const playAudio = (num, event) => {
-	/* インデックスを検証 */
-	if (num >= ista_audio_obj.length) return;
-	/* 再生中の音声を停止 */
-	if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
-		ista_audio_obj[ista_last_play_index].pause();
-		ista_audio_obj[ista_last_play_index].currentTime = 0;
-	}
-	/* Audioオブジェクトを用意して再生 */
-	if (ista_audio_obj[num] === null) return;
-	ista_audio_obj[num].play().then(() => {}, () => {
-		ista_audio_link[num].innerHTML = '試聴不可';
-		ista_audio_obj[num]            = null;
+	/* 音量の確認処理を挟む */
+	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
+		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
+		sessionStorage.setItem('ista_volume_se' , params['volume_se']);
+    ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm'));
+    ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se'));
+		/* インデックスを検証 */
+		if (num >= ista_audio_obj.length) return;
+		/* 再生中の音声を停止 */
+		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
+			ista_audio_obj[ista_last_play_index].pause();
+			ista_audio_obj[ista_last_play_index].currentTime = 0;
+		}
+		/* Audioオブジェクトを用意して再生 */
+		if (ista_audio_obj[num] === null) return;
+		ista_audio_obj[num].play().then(() => {}, () => {
+			ista_audio_link[num].innerHTML = '試聴不可';
+			ista_audio_obj[num]            = null;
+		});
+		ista_last_play_index = num;
 	});
-	ista_last_play_index = num;
 };
 
 

@@ -14,7 +14,7 @@ let ista_last_play_index = null;
 
 
 /* --- 指定番号の音声を再生する関数 --- */
-const playAudio = (num, event) => {
+const playAudio = (num, thumb_url, event) => {
 	/* 音量の確認処理を挟む */
 	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
 		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
@@ -23,6 +23,9 @@ const playAudio = (num, event) => {
     ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se'));
 		/* インデックスを検証 */
 		if (num >= ista_audio_obj.length) return;
+		/* 素材種別に合わせて音量を設定 */
+		let ista_volume = ista_volume_se;
+		if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
 		/* 再生中の音声を停止 */
 		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
 			ista_audio_obj[ista_last_play_index].pause();
@@ -30,6 +33,7 @@ const playAudio = (num, event) => {
 		}
 		/* Audioオブジェクトを用意して再生 */
 		if (ista_audio_obj[num] === null) return;
+		ista_audio_obj[num].volume = ista_volume / 100;
 		ista_audio_obj[num].play().then(() => {}, () => {
 			ista_audio_link[num].innerHTML = '試聴不可';
 			ista_audio_obj[num]            = null;
@@ -65,7 +69,7 @@ const appendPlayer = parent => {
 	div_link.classList.add('ista_cmn_player');
 	a_link.innerHTML = '試聴';
 	a_link.href      = 'javascript:void(0)';
-	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1));
+	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1, thumb_url));
 	div_link.appendChild(a_link);
 	parent.querySelector('.cmn_thumb_L').appendChild(div_link);
 	ista_audio_link.push(a_link);

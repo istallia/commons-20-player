@@ -3,11 +3,11 @@ if (typeof browser === 'undefined') browser = chrome;
 browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
 	sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
 	sessionStorage.setItem('ista_volume_se' , params['volume_se']);
-	ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '1');
-	ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '1');
+	ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
+	ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
 });
-let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm') || '1');
-let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se') || '1');
+let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
+let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se') || '100');
 let ista_audio_obj       = [];
 let ista_audio_link      = [];
 let ista_last_play_index = null;
@@ -55,7 +55,7 @@ const appendPlayer = parent => {
 	if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
 	/* Audioを用意 */
 	let audio_obj     = new Audio();
-	audio_obj.volume  = ista_volume;
+	audio_obj.volume  = ista_volume / 100;
 	audio_obj.preload = 'none';
 	audio_obj.src     = 'https://commons.nicovideo.jp/api/preview/get?cid=' + thumb_id;
 	ista_audio_obj.push(audio_obj);

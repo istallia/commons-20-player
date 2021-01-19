@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
 		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
 		sessionStorage.setItem('ista_volume_se' , params['volume_se']);
-		ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '1');
-		ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '1');
+		ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
+		ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
 	});
 });
-let ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '1');
-let ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '1');
+let ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
+let ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');

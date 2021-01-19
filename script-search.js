@@ -10,11 +10,12 @@ let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm') || '
 let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se') || '100');
 let ista_audio_obj       = [];
 let ista_audio_link      = [];
+let ista_audio_type      = [];
 let ista_last_play_index = null;
 
 
 /* --- 指定番号の音声を再生する関数 --- */
-const playAudio = (num, thumb_url, event) => {
+const playAudio = (num, event) => {
 	/* 音量の確認処理を挟む */
 	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
 		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
@@ -25,15 +26,13 @@ const playAudio = (num, thumb_url, event) => {
 		if (num >= ista_audio_obj.length) return;
 		/* 素材種別に合わせて音量を設定 */
 		let ista_volume = ista_volume_se;
-		if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
+		if (ista_audio_type[num] === 'audio01') ista_volume = ista_volume_bgm;
 		/* 再生中の音声を停止 */
 		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
 			ista_audio_obj[ista_last_play_index].pause();
 			ista_audio_obj[ista_last_play_index].currentTime = 0;
-			if (num === ista_last_play_index && ista_audio_link[num].innerHTML === '再生中') {
-				ista_audio_link[num].innerHTML = '試聴';
-				return;
-			}
+			ista_audio_link[ista_last_play_index].innerHTML = '試聴';
+			if (num === ista_last_play_index && ista_audio_link[num].innerHTML === '再生中') return;
 		}
 		/* Audioオブジェクトを用意して再生 */
 		if (ista_audio_obj[num] === null) return;
@@ -71,13 +70,14 @@ const appendPlayer = parent => {
 	audio_obj.preload = 'none';
 	audio_obj.src     = 'https://commons.nicovideo.jp/api/preview/get?cid=' + thumb_id;
 	ista_audio_obj.push(audio_obj);
+	ista_audio_type.push(thumb_url);
 	/* テキストリンクをdivに入れて追加 */
 	let div_link = document.createElement('div');
 	let a_link   = document.createElement('a');
 	div_link.classList.add('ista_cmn_player');
 	a_link.innerHTML = '試聴';
 	a_link.href      = 'javascript:void(0)';
-	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1, thumb_url));
+	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1));
 	div_link.appendChild(a_link);
 	parent.querySelector('.cmn_thumb_L').appendChild(div_link);
 	ista_audio_link.push(a_link);
@@ -96,3 +96,21 @@ let ista_put_func = () => {
 	}
 };
 setTimeout(ista_put_func, 0);
+
+
+/* --- 音量変更時の反映 --- */
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.ctrl === 'update-volume') {
+		/* まだ再生していない場合は無視 */
+		if (ista_last_play_index === null || ista_audio_obj[ista_last_play_index] === null) return;
+		/* 変数にも反映 */
+		sessionStorage.setItem('ista_volume_bgm', request.bgm);
+		sessionStorage.setItem('ista_volume_se' , request.se);
+    ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm'));
+    ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se'));
+		/* 音量の調整 */
+		let ista_volume = ista_volume_se;
+		if (ista_audio_type[ista_last_play_index] === 'audio01') ista_volume = ista_volume_bgm;
+		ista_audio_obj[ista_last_play_index].volume = ista_volume / 100;
+	}
+});

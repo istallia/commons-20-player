@@ -33,4 +33,11 @@ let applyVolumeToBackground = event => {
 		bgm  : ista_volume_bgm,
 		se   : ista_volume_se
 	});
+	chrome.tabs.query({active:true, lastFocusedWindow:true}, function(tab) {
+		chrome.tabs.sendMessage(tab[0].id, {
+			ctrl : 'update-volume',
+			bgm  : ista_volume_bgm,
+			se   : ista_volume_se
+		});
+	});
 };

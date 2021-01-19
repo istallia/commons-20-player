@@ -12,5 +12,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			volume_se  : ista_volume_se
 		});
 		return true;
+	} else if (request.ctrl === 'set-volume') {
+		ista_volume_bgm = Number(request.bgm);
+		ista_volume_se  = Number(request.se);
+		localStorage.setItem('ista_volume_bgm', ista_volume_bgm);
+		localStorage.setItem('ista_volume_se' , ista_volume_se);
 	}
 });

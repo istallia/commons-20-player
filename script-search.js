@@ -30,11 +30,19 @@ const playAudio = (num, thumb_url, event) => {
 		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
 			ista_audio_obj[ista_last_play_index].pause();
 			ista_audio_obj[ista_last_play_index].currentTime = 0;
+			if (num === ista_last_play_index && ista_audio_link[num].innerHTML === '再生中') {
+				ista_audio_link[num].innerHTML = '試聴';
+				return;
+			}
 		}
 		/* Audioオブジェクトを用意して再生 */
 		if (ista_audio_obj[num] === null) return;
 		ista_audio_obj[num].volume = ista_volume / 100;
-		ista_audio_obj[num].play().then(() => {}, () => {
+		ista_audio_obj[num].play().then(() => {
+			ista_audio_link[num].innerHTML = '再生中';
+			let ended_func = (n, event) => ista_audio_link[n].innerHTML = '試聴';
+			ista_audio_obj[num].addEventListener('ended', ended_func.bind(this, num));
+		}, () => {
 			ista_audio_link[num].innerHTML = '試聴不可';
 			ista_audio_obj[num]            = null;
 		});

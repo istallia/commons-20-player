@@ -33,11 +33,14 @@ let applyVolumeToBackground = event => {
 		bgm  : ista_volume_bgm,
 		se   : ista_volume_se
 	});
-	browser.tabs.query({active:true, lastFocusedWindow:true}, function(tab) {
-		browser.tabs.sendMessage(tab[0].id, {
-			ctrl : 'update-volume',
-			bgm  : ista_volume_bgm,
-			se   : ista_volume_se
-		});
+	browser.tabs.query({url:['*://commons.nicovideo.jp/search/*']}, tab => {
+		for (let i in tab) {
+			let id = tab[i].id;
+			browser.tabs.sendMessage(id, {
+				ctrl : 'update-volume',
+				bgm  : ista_volume_bgm,
+				se   : ista_volume_se
+			});
+		}
 	});
 };

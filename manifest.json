@@ -20,6 +20,12 @@
 			"js"      : ["script-material.js"]
 		}
 	],
+	"background": {
+		"scripts": [
+			"background.js"
+		],
+		"persistent": true
+	},
 	"browser_action" : {
 		"default_title" : "コモンズ20プレイヤー",
 		"default_popup" : "popup.html"

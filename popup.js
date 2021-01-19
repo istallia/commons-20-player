@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
 		document.getElementById('ista-volume-bgm').value = ista_volume_bgm;
 		document.getElementById('ista-volume-se').value  = ista_volume_se;
-		document.getElementById('ista-view-volume-bgm').innerHTML = String(ista_volume_bgm);
-		document.getElementById('ista-view-volume-se').innerHTML  = String(ista_volume_se);
+		document.getElementById('ista-view-volume-bgm').innerText = String(ista_volume_bgm);
+		document.getElementById('ista-view-volume-se').innerText  = String(ista_volume_se);
 		document.getElementById('ista-volume-bgm').addEventListener('input', applyVolumeToBackground);
 		document.getElementById('ista-volume-bgm').addEventListener('change', applyVolumeToBackground);
 		document.getElementById('ista-volume-se').addEventListener('input', applyVolumeToBackground);
@@ -26,8 +26,8 @@ let applyVolumeToBackground = event => {
 	ista_volume_se  = Number(document.getElementById('ista-volume-se').value);
 	sessionStorage.setItem('ista_volume_bgm', ista_volume_bgm);
 	sessionStorage.setItem('ista_volume_se' , ista_volume_se);
-	document.getElementById('ista-view-volume-bgm').innerHTML = String(ista_volume_bgm);
-	document.getElementById('ista-view-volume-se').innerHTML  = String(ista_volume_se);
+	document.getElementById('ista-view-volume-bgm').innerText = String(ista_volume_bgm);
+	document.getElementById('ista-view-volume-se').innerText  = String(ista_volume_se);
 	browser.runtime.sendMessage({
 		ctrl : 'set-volume',
 		bgm  : ista_volume_bgm,

@@ -31,21 +31,21 @@ const playAudio = (num, event) => {
 		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
 			ista_audio_obj[ista_last_play_index].pause();
 			ista_audio_obj[ista_last_play_index].currentTime = 0;
-			if (num === ista_last_play_index && ista_audio_link[num].innerHTML === '再生中') {
-				ista_audio_link[ista_last_play_index].innerHTML = '試聴';
+			if (num === ista_last_play_index && ista_audio_link[num].innerText === '再生中') {
+				ista_audio_link[ista_last_play_index].innerText = '試聴';
 				return;
 			}
-			ista_audio_link[ista_last_play_index].innerHTML = '試聴';
+			ista_audio_link[ista_last_play_index].innerText = '試聴';
 		}
 		/* Audioオブジェクトを用意して再生 */
 		if (ista_audio_obj[num] === null) return;
 		ista_audio_obj[num].volume = ista_volume / 100;
 		ista_audio_obj[num].play().then(() => {
-			ista_audio_link[num].innerHTML = '再生中';
-			let ended_func = (n, event) => ista_audio_link[n].innerHTML = '試聴';
+			ista_audio_link[num].innerText = '再生中';
+			let ended_func = (n, event) => ista_audio_link[n].innerText = '試聴';
 			ista_audio_obj[num].addEventListener('ended', ended_func.bind(this, num));
 		}, () => {
-			ista_audio_link[num].innerHTML = '試聴不可';
+			ista_audio_link[num].innerText = '試聴不可';
 			ista_audio_obj[num]            = null;
 		});
 		ista_last_play_index = num;
@@ -78,7 +78,7 @@ const appendPlayer = parent => {
 	let div_link = document.createElement('div');
 	let a_link   = document.createElement('a');
 	div_link.classList.add('ista_cmn_player');
-	a_link.innerHTML = '試聴';
+	a_link.innerText = '試聴';
 	a_link.href      = 'javascript:void(0)';
 	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1));
 	div_link.appendChild(a_link);

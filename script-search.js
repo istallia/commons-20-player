@@ -31,8 +31,11 @@ const playAudio = (num, event) => {
 		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
 			ista_audio_obj[ista_last_play_index].pause();
 			ista_audio_obj[ista_last_play_index].currentTime = 0;
+			if (num === ista_last_play_index && ista_audio_link[num].innerHTML === '再生中') {
+				ista_audio_link[ista_last_play_index].innerHTML = '試聴';
+				return;
+			}
 			ista_audio_link[ista_last_play_index].innerHTML = '試聴';
-			if (num === ista_last_play_index && ista_audio_link[num].innerHTML === '再生中') return;
 		}
 		/* Audioオブジェクトを用意して再生 */
 		if (ista_audio_obj[num] === null) return;

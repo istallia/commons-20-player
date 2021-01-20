@@ -1,6 +1,8 @@
 # commons-20-player
 
-ニコニ・コモンズのBGM/SE素材を検索ページで再生できるようにする拡張機能(アドオン)
+ニコニ・コモンズのBGM/SE素材を検索ページで再生できるようにする拡張機能(アドオン)  
+https://chrome.google.com/webstore/detail/kmkkanllnppjgpjbkfbocgeflcbbbdgf  
+https://addons.mozilla.org/ja/firefox/addon/コモンズ20プレイヤー/
 
 
 

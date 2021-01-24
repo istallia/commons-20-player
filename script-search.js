@@ -63,7 +63,8 @@ const appendPlayer = parent => {
 	if (thumb_url.slice(0,5) !== 'audio') return;
 	/* コモンズIDを取り出す */
 	let thumb_id = parent.querySelector('a').getAttribute('href');
-	thumb_id     = thumb_id.split('/')[2].slice(2);
+	thumb_id     = thumb_id.split('/');
+	thumb_id     = thumb_id[thumb_id.length-1].slice(2);
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
 	if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
@@ -98,12 +99,20 @@ let ista_put_func = () => {
 		'div#s_s_ranking td[width]',           // 新着登録作品
 		'div[style="pickup_thumb"]'            // おすすめピックアップ
 	];
-	let ista_divs = [... document.querySelectorAll(ista_thumb_list.join(', '))];
+	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a > img').join(', '))];
 	for (let i in ista_divs) {
-		appendPlayer(ista_divs[i]);
+		appendPlayer(ista_divs[i].parentNode.parentNode);
 	}
 };
 setTimeout(ista_put_func, 0);
+setTimeout(ista_put_func, 1000);
+const target   = document.querySelector("#index_left > div.center > table > tbody");
+if (target !== null) {
+	const observer = new MutationObserver(records => {
+		if (records[0].addedNodes.length > 0) setTimeout(ista_put_func, 0);
+	});
+	observer.observe(target, {childList:true, subtree:true});
+}
 
 
 /* --- 音量変更時の反映 --- */

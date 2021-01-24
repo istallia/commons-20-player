@@ -56,13 +56,13 @@ const playAudio = (num, event) => {
 /* --- プレイヤーを埋め込む関数 --- */
 const appendPlayer = parent => {
 	/* プレイヤー追加済みdivを除外 */
-	if (parent.querySelectorAll('.cmn_thumb_L').length > 1) return;
+	if (parent.classList.contains('ista-exist-player')) return;
 	/* 素材種別を判定 */
-	let thumb_url = parent.querySelector('div.cmn_thumb_L > a > img').getAttribute('src');
+	let thumb_url = parent.querySelector('a > img').getAttribute('src');
 	thumb_url     = thumb_url.slice(-11, -4);
 	if (thumb_url.slice(0,5) !== 'audio') return;
 	/* コモンズIDを取り出す */
-	let thumb_id = parent.querySelector('div.cmn_thumb_L > a').getAttribute('href');
+	let thumb_id = parent.querySelector('a').getAttribute('href');
 	thumb_id     = thumb_id.split('/')[2].slice(2);
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
@@ -82,14 +82,18 @@ const appendPlayer = parent => {
 	a_link.href      = 'javascript:void(0)';
 	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1));
 	div_link.appendChild(a_link);
-	parent.querySelector('.cmn_thumb_L').appendChild(div_link);
+	parent.appendChild(div_link);
+	parent.classList.add('ista-exist-player');
 	ista_audio_link.push(a_link);
 };
 
 
-/* 読み込み時の処理 */
+/* --- 読み込み時の処理 --- */
 let ista_put_func = () => {
-	let ista_divs = [... document.getElementsByClassName('cmn_thumb_frm')];
+	const ista_thumb_list = [
+		'td:not([v-for]) .cmn_thumb_L'
+	];
+	let ista_divs = [... document.querySelectorAll(ista_thumb_list.join(', '))];
 	if (ista_divs.length < 1) {
 		setTimeout(ista_put_func, 200);
 		return;
@@ -99,6 +103,7 @@ let ista_put_func = () => {
 	}
 };
 setTimeout(ista_put_func, 0);
+document.addEventListener('DOMContentLoaded', ista_put_func);
 
 
 /* --- 音量変更時の反映 --- */

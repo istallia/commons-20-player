@@ -15,6 +15,10 @@ div[style="pickup_thumb"] div.ista_cmn_player {
 div.thumb_list_thumb div.ista_cmn_player {
 	left : 0.7rem;
 }
+#index_box td.log_border div.ista_cmn_player {
+	top  : calc((100% - 80px) / 2);
+	left : 0.9rem;
+}
 div.ista_cmn_player > a {
 	background-color : white;
 }

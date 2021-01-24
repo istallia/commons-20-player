@@ -97,7 +97,8 @@ let ista_put_func = () => {
 		'div.thumb_list_thumb',                // ユーザーページ
 		'div.hot_body_left',                   // コモンズ人気作品
 		'div#s_s_ranking td[width]',           // 新着登録作品
-		'div[style="pickup_thumb"]'            // おすすめピックアップ
+		'div[style="pickup_thumb"]',           // おすすめピックアップ
+		'#index_box td.log_border'             // ランキング
 	];
 	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a > img').join(', '))];
 	for (let i in ista_divs) {

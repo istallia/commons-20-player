@@ -1,5 +1,7 @@
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
+ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
+ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
 browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
 	sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
 	sessionStorage.setItem('ista_volume_se' , params['volume_se']);
@@ -7,8 +9,6 @@ browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
 	ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
 	applyVolume();
 });
-let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
-let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se') || '100');
 
 
 /* --- 音量の反映 --- */

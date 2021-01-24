@@ -106,7 +106,8 @@ let ista_put_func = () => {
 };
 setTimeout(ista_put_func, 0);
 setTimeout(ista_put_func, 1000);
-const target   = document.querySelector("#index_left > div.center > table > tbody");
+window.addEventListener('load', ista_put_func);
+const target = document.querySelector("#index_left > div.center > table > tbody");
 if (target !== null) {
 	const observer = new MutationObserver(records => {
 		if (records[0].addedNodes.length > 0) setTimeout(ista_put_func, 0);

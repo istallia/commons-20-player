@@ -1,0 +1,24 @@
+/* --- アイテムのスタイル --- */
+.ista_cmn_player_parent {
+	position : relative;
+}
+div.ista_cmn_player {
+	position : absolute;
+	padding  : 0.5rem;
+	top      : 0px;
+	left     : 0px;
+}
+div[style="pickup_thumb"] div.ista_cmn_player {
+	top  : 0.4rem;
+	left : 0.4rem;
+}
+div.thumb_list_thumb div.ista_cmn_player {
+	left : 0.7rem;
+}
+#index_box td.log_border div.ista_cmn_player {
+	top  : calc((100% - 80px) / 2);
+	left : 0.9rem;
+}
+div.ista_cmn_player > a {
+	background-color : white;
+}

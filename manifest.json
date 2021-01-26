@@ -1,8 +1,8 @@
 {
 	"manifest_version" : 2,
 	"name"             : "コモンズ20プレイヤー",
-	"version"          : "0.1.1",
-	"description"      : "ニコニ・コモンズのBGM/SE素材を検索ページで再生できるようにする拡張機能",
+	"version"          : "0.2.0",
+	"description"      : "ニコニ・コモンズのBGM/SE素材を一覧ページで再生できるようにする拡張機能",
 	"author"           : "istallia",
 	"icons" : {
 		"32"  : "icon_32.png",
@@ -11,12 +11,12 @@
 	},
 	"content_scripts" : [
 		{
-			"matches" : ["http://commons.nicovideo.jp/search/*", "https://commons.nicovideo.jp/search/*"],
-			"js"      : ["script-search.js"],
-			"css"     : ["style-search.css"]
+			"matches" : ["*://commons.nicovideo.jp/*"],
+			"js"      : ["script-player.js"],
+			"css"     : ["style-player.css"]
 		},
 		{
-			"matches" : ["http://commons.nicovideo.jp/material/*", "https://commons.nicovideo.jp/material/*"],
+			"matches" : ["*://commons.nicovideo.jp/material/*"],
 			"js"      : ["script-material.js"]
 		}
 	],

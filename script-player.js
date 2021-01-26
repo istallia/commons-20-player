@@ -56,14 +56,15 @@ const playAudio = (num, event) => {
 /* --- プレイヤーを埋め込む関数 --- */
 const appendPlayer = parent => {
 	/* プレイヤー追加済みdivを除外 */
-	if (parent.querySelectorAll('.cmn_thumb_L').length > 1) return;
+	if (parent.classList.contains('ista_cmn_player_parent')) return;
 	/* 素材種別を判定 */
-	let thumb_url = parent.querySelector('div.cmn_thumb_L > a > img').getAttribute('src');
+	let thumb_url = parent.querySelector('a > img').getAttribute('src');
 	thumb_url     = thumb_url.slice(-11, -4);
 	if (thumb_url.slice(0,5) !== 'audio') return;
 	/* コモンズIDを取り出す */
-	let thumb_id = parent.querySelector('div.cmn_thumb_L > a').getAttribute('href');
-	thumb_id     = thumb_id.split('/')[2].slice(2);
+	let thumb_id = parent.querySelector('a').getAttribute('href');
+	thumb_id     = thumb_id.split('/');
+	thumb_id     = thumb_id[thumb_id.length-1].slice(2);
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
 	if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
@@ -82,23 +83,38 @@ const appendPlayer = parent => {
 	a_link.href      = 'javascript:void(0)';
 	a_link.addEventListener('click', playAudio.bind(this, ista_audio_obj.length-1));
 	div_link.appendChild(a_link);
-	parent.querySelector('.cmn_thumb_L').appendChild(div_link);
+	parent.appendChild(div_link);
+	parent.classList.add('ista_cmn_player_parent');
 	ista_audio_link.push(a_link);
 };
 
 
-/* 読み込み時の処理 */
+/* --- 読み込み時の処理 --- */
 let ista_put_func = () => {
-	let ista_divs = [... document.getElementsByClassName('cmn_thumb_frm')];
-	if (ista_divs.length < 1) {
-		setTimeout(ista_put_func, 200);
-		return;
-	}
+	const ista_thumb_list = [
+		'td:not([v-for]) .cmn_thumb_L',        // 検索
+		'tr[id^="material_"] > td.log_border', // ユーザー投稿素材一覧
+		'div.thumb_list_thumb',                // ユーザーページ
+		'div.hot_body_left',                   // コモンズ人気作品
+		'div#s_s_ranking td[width]',           // 新着登録作品
+		'div[style="pickup_thumb"]',           // おすすめピックアップ
+		'#index_box td.log_border'             // ランキング
+	];
+	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a > img').join(', '))];
 	for (let i in ista_divs) {
-		appendPlayer(ista_divs[i]);
+		appendPlayer(ista_divs[i].parentNode.parentNode);
 	}
 };
 setTimeout(ista_put_func, 0);
+setTimeout(ista_put_func, 1000);
+window.addEventListener('load', ista_put_func);
+const target = document.querySelector("#index_left > div.center > table > tbody");
+if (target !== null) {
+	const observer = new MutationObserver(records => {
+		if (records[0].addedNodes.length > 0) setTimeout(ista_put_func, 0);
+	});
+	observer.observe(target, {childList:true, subtree:true});
+}
 
 
 /* --- 音量変更時の反映 --- */

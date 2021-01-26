@@ -1,6 +1,20 @@
+/* --- ポップアップ全体の調整 --- */
 body {
-	width : 240px;
+	width : 280px;
 }
 input[type="range"] {
 	width : 97%;
+}
+
+
+/* --- ミニプレイヤー関連 --- */
+div.mini-player span {
+	display     : block;
+	white-space : nowrap;
+	overflow-x  : hidden;
+}
+div.mini-player img {
+	width   : 14px;
+	height  : 14px;
+	padding : 5px;
 }

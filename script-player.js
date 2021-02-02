@@ -58,7 +58,7 @@ const appendPlayer = parent => {
 	/* プレイヤー追加済みdivを除外 */
 	if (parent.classList.contains('ista_cmn_player_parent')) return;
 	/* 素材種別を判定 */
-	let thumb_url = parent.querySelector('a > span > img').getAttribute('src');
+	let thumb_url = parent.querySelector('a img').getAttribute('src');
 	thumb_url     = thumb_url.slice(-11, -4);
 	if (thumb_url.slice(0,5) !== 'audio') return;
 	/* コモンズIDを取り出す */

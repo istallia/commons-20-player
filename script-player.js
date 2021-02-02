@@ -58,7 +58,7 @@ const appendPlayer = parent => {
 	/* プレイヤー追加済みdivを除外 */
 	if (parent.classList.contains('ista_cmn_player_parent')) return;
 	/* 素材種別を判定 */
-	let thumb_url = parent.querySelector('a > img').getAttribute('src');
+	let thumb_url = parent.querySelector('a > span > img').getAttribute('src');
 	thumb_url     = thumb_url.slice(-11, -4);
 	if (thumb_url.slice(0,5) !== 'audio') return;
 	/* コモンズIDを取り出す */
@@ -92,17 +92,16 @@ const appendPlayer = parent => {
 /* --- 読み込み時の処理 --- */
 let ista_put_func = () => {
 	const ista_thumb_list = [
-		'td:not([v-for]) .cmn_thumb_L',        // 検索
+		'li.searchItemCardArea',               // 検索
 		'tr[id^="material_"] > td.log_border', // ユーザー投稿素材一覧
 		'div.thumb_list_thumb',                // ユーザーページ
-		'div.hot_body_left',                   // コモンズ人気作品
-		'div#s_s_ranking td[width]',           // 新着登録作品
-		'div[style="pickup_thumb"]',           // おすすめピックアップ
+		'li.materialsItemCardArea',            // ランキング(トップページ)
+		'div.materialsItemCardArea',           // 新着作品(トップページ)
 		'#index_box td.log_border'             // ランキング
 	];
-	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a > img').join(', '))];
+	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a > span > img').join(', '))];
 	for (let i in ista_divs) {
-		appendPlayer(ista_divs[i].parentNode.parentNode);
+		appendPlayer(ista_divs[i].parentNode.parentNode.parentNode);
 	}
 };
 setTimeout(ista_put_func, 0);

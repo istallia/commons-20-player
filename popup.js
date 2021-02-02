@@ -33,20 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('ista-volume-se').addEventListener('input', applyVolumeToBackground);
 		document.getElementById('ista-volume-se').addEventListener('change', applyVolumeToBackground);
 		/* 表示テスト用のハリボテプレイヤーを配置 */
-		const main        = document.querySelector('main');
-		const mini_player = document.createElement('div');
-		mini_player.classList.add('mini-player');
-		const span_title     = document.createElement('span');
-		span_title.innerText = '【Chrome拡張機能】サンプルテキストです。【特に何があるわけではない】';
-		span_title.classList.add('mini-player-title');
-		mini_player.appendChild(span_title);
-		const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
-			const img = document.createElement('img');
-			img.src   = icons[str];
-			img.title = icon_captions[str];
-			mini_player.appendChild(img);
-		});
-		main.appendChild(mini_player);
+		// const main        = document.querySelector('main');
+		// const mini_player = document.createElement('div');
+		// mini_player.classList.add('mini-player');
+		// const span_title     = document.createElement('span');
+		// span_title.innerText = '【Chrome拡張機能】サンプルテキストです。【特に何があるわけではない】';
+		// span_title.classList.add('mini-player-title');
+		// mini_player.appendChild(span_title);
+		// const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
+		// 	const img = document.createElement('img');
+		// 	img.src   = icons[str];
+		// 	img.title = icon_captions[str];
+		// 	mini_player.appendChild(img);
+		// });
+		// main.appendChild(mini_player);
 	});
 });
 let ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');

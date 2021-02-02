@@ -99,7 +99,7 @@ let ista_put_func = () => {
 		'div.materialsItemCardArea',           // 新着作品(トップページ)
 		'#index_box td.log_border'             // ランキング
 	];
-	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a > span > img').join(', '))];
+	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a img').join(', '))];
 	for (let i in ista_divs) {
 		appendPlayer(ista_divs[i].parentNode.parentNode.parentNode);
 	}

@@ -101,7 +101,11 @@ let ista_put_func = () => {
 	];
 	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a img').join(', '))];
 	for (let i in ista_divs) {
-		appendPlayer(ista_divs[i].parentNode.parentNode.parentNode);
+		if (ista_divs[i].parentNode.parentNode.tagName.toLowerCase() === 'a') {
+			appendPlayer(ista_divs[i].parentNode.parentNode.parentNode);
+		} else {
+			appendPlayer(ista_divs[i].parentNode.parentNode);
+		}
 	}
 };
 setTimeout(ista_put_func, 0);

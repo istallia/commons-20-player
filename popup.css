@@ -12,6 +12,7 @@ div.mini-player span {
 	display     : block;
 	white-space : nowrap;
 	overflow-x  : hidden;
+	cursor      : pointer;
 }
 div.mini-player img {
 	width   : 14px;

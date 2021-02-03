@@ -11,6 +11,8 @@ let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se') || '1
 let ista_audio_obj       = [];
 let ista_audio_link      = [];
 let ista_audio_type      = [];
+let ista_audio_title     = [];
+let ista_audio_nc_id     = [];
 let ista_last_play_index = null;
 let ista_autoplaying     = false;
 
@@ -76,6 +78,11 @@ const appendPlayer = parent => {
 	audio_obj.src     = 'https://commons.nicovideo.jp/api/preview/get?cid=' + thumb_id;
 	ista_audio_obj.push(audio_obj);
 	ista_audio_type.push(thumb_url);
+	ista_audio_nc_id.push('nc'+thumb_id);
+	let alt_parent = parent;
+	if (alt_parent.tagName.toLowerCase() !== 'li') alt_parent = alt_parent.parentNode;
+	let title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a');
+	ista_audio_title.push(title_element.innerText);
 	/* テキストリンクをdivに入れて追加 */
 	let div_link = document.createElement('div');
 	let a_link   = document.createElement('a');
@@ -140,12 +147,21 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	}
 	/* 連続再生の開始 */
 	if (request.ctrl === 'start-autoplay') {
+		/* 連続再生が可能かを確認 */
 		if (ista_audio_obj.length < 1) {
 			sendResponse({is_playable:false, tab_id:request.tab_id});
 			return;
 		}
+		/* 再生を開始する */
+		playAudio(0, null);
+		/* 返答を送信 */
 		ista_autoplaying = true;
-		sendResponse({is_playable:true, tab_id:request.tab_id});
+		sendResponse({
+			is_playable : true,
+			tab_id      : request.tab_id,
+			title       : ista_audio_title[0],
+			commons_id  : ista_audio_nc_id[0]
+		});
 		return;
 	}
 });

@@ -45,8 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
 						mini_player.id    = 'player-tab-' + String(response.tab_id);
 						mini_player.classList.add('mini-player');
 						const span_title     = document.createElement('span');
-						span_title.innerText = '(準備中...)';
+						span_title.innerText = response.title;
 						span_title.classList.add('mini-player-title');
+						let func = nc_id => browser.tabs.create({active:true, url:'https://commons.nicovideo.jp/material/'+nc_id});
+						span_title.addEventListener('click', func.bind(this, response.commons_id));
 						mini_player.appendChild(span_title);
 						const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
 							const img = document.createElement('img');

@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			browser.tabs.query({active:true, currentWindow:true, url:'*://commons.nicovideo.jp/*'}, tabs => {
 				if (tabs.length < 1) return;
 				const tab = tabs[0];
-				browser.runtime.sendMessage({ctrl:'start-autoplay', tab_id:tab.id}, response => {
+				browser.tabs.sendMessage(tab.id, {ctrl:'start-autoplay', tab_id:tab.id}, response => {
 					/* ミニプレイヤーを配置 */
 					const main        = document.querySelector('main');
 					const mini_player = document.createElement('div');

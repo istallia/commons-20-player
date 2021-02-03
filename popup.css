@@ -18,4 +18,5 @@ div.mini-player img {
 	width   : 14px;
 	height  : 14px;
 	padding : 5px;
+	cursor  : pointer;
 }

@@ -52,6 +52,7 @@ const playAudio = (num, event) => {
 			ista_audio_link[num].innerText = '試聴不可';
 			ista_audio_obj[num]            = null;
 			ista_nowplaying                = false;
+			if (ista_autoplaying && num < ista_audio_obj.length - 1) playAudio(num+1, null);
 		});
 		ista_last_play_index = num;
 	});
@@ -189,5 +190,17 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			now_playing : ista_nowplaying
 		});
 		return;
+	}
+	/* 再生/一時停止 */
+	if (request.ctrl === 'play-audio') {
+		playAudio(ista_last_play_index, null);
+		sendResponse({});
+	}
+	if (request.ctrl === 'pause-audio' && ista_nowplaying) {
+		ista_audio_link[ista_last_play_index].innerText = '試聴';
+		ista_audio_obj[ista_last_play_index].pause();
+		ista_audio_obj[ista_last_play_index].currentTime = 0;
+		ista_nowplaying                                  = false;
+		sendResponse({});
 	}
 });

@@ -67,6 +67,7 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 	const main        = document.querySelector('main');
 	const mini_player = document.createElement('div');
 	mini_player.id    = 'player-tab-' + String(tab_id);
+	mini_player.setAttribute('tab_id', String(tab_id));
 	mini_player.classList.add('mini-player');
 	const span_title     = document.createElement('span');
 	span_title.innerText = title;
@@ -76,6 +77,7 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 	mini_player.appendChild(span_title);
 	const icon_elements = Object.keys(icons).map(str => {
 		const img = document.createElement('img');
+		if (str === 'icon_play' || str === 'icon_pause') img.addEventListener('click', playAndPause);
 		if (str !== 'icon_pause' && !now_playing) {
 			img.src   = icons[str];
 			img.title = icon_captions[str];
@@ -87,6 +89,24 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 		}
 	});
 	main.appendChild(mini_player);
+};
+
+
+/* --- 再生/一時停止ボタンの処理 --- */
+const playAndPause = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	if (img.title === icon_captions['icon_play']) {
+		browser.tabs.sendMessage(tab_id, {ctrl:'play-audio'}, response => {
+			img.src   = icons['icon_pause'];
+			img.title = icon_captions['icon_pause'];
+		});
+	} else {
+		browser.tabs.sendMessage(tab_id, {ctrl:'pause-audio'}, response => {
+			img.src   = icons['icon_play'];
+			img.title = icon_captions['icon_play'];
+		});
+	}
 };
 
 

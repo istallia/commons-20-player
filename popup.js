@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			for (let i in tabs) {
 				let tab_id = tabs[i].id;
 				browser.tabs.sendMessage(tab_id, {ctrl:'get-autoplay-status', tab_id:tab_id}, response => {
+					if (!response) return;
 					if (response.autoplaying) {
 						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.now_playing);
 					}

@@ -7,6 +7,13 @@ input[type="range"] {
 }
 
 
+/* --- 連続再生 --- */
+button#start-autoplay {
+	display : block;
+	margin  : 1.25rem 0.1rem 0.5rem;
+}
+
+
 /* --- ミニプレイヤー関連 --- */
 div.mini-player span {
 	display     : block;

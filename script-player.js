@@ -15,6 +15,7 @@ let ista_audio_title     = [];
 let ista_audio_nc_id     = [];
 let ista_last_play_index = null;
 let ista_autoplaying     = false;
+let ista_nowplaying      = false;
 
 
 /* --- 指定番号の音声を再生する関数 --- */
@@ -45,6 +46,7 @@ const playAudio = (num, event) => {
 		ista_audio_obj[num].volume = ista_volume / 100;
 		ista_audio_obj[num].play().then(() => {
 			ista_audio_link[num].innerText = '再生中';
+			ista_nowplaying                = true;
 		}, () => {
 			ista_audio_link[num].innerText = '試聴不可';
 			ista_audio_obj[num]            = null;
@@ -76,6 +78,7 @@ const appendPlayer = parent => {
 	audio_obj.src     = 'https://commons.nicovideo.jp/api/preview/get?cid=' + thumb_id;
 	let ended_func = (n, event) => {
 		ista_audio_link[n].innerText = '試聴';
+		ista_nowplaying              = false;
 		if (ista_autoplaying && n < ista_audio_obj.length - 1) playAudio(n+1, null);
 	};
 	audio_obj.addEventListener('ended', ended_func.bind(this, ista_audio_obj.length));
@@ -164,6 +167,24 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			tab_id      : request.tab_id,
 			title       : ista_audio_title[0],
 			commons_id  : ista_audio_nc_id[0]
+		});
+		return;
+	}
+	/* 連続再生ステータスの返信 */
+	if (request.ctrl === 'get-autoplay-status') {
+		if (!ista_autoplaying) {
+			sendResponse({
+				tab_id      : request.tab_id,
+				autoplaying : false
+			});
+			return;
+		}
+		sendResponse({
+			tab_id      : request.tab_id,
+			autoplaying : true,
+			commons_id  : ista_audio_nc_id[ista_last_play_index],
+			title       : ista_audio_title[ista_last_play_index],
+			now_playing : ista_nowplaying
 		});
 		return;
 	}

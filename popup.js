@@ -40,46 +40,54 @@ document.addEventListener('DOMContentLoaded', () => {
 				browser.tabs.sendMessage(tab.id, {ctrl:'start-autoplay', tab_id:tab.id}, response => {
 					if (response.is_playable) {
 						/* ミニプレイヤーを配置 */
-						const main        = document.querySelector('main');
-						const mini_player = document.createElement('div');
-						mini_player.id    = 'player-tab-' + String(response.tab_id);
-						mini_player.classList.add('mini-player');
-						const span_title     = document.createElement('span');
-						span_title.innerText = response.title;
-						span_title.classList.add('mini-player-title');
-						let func = nc_id => browser.tabs.create({active:true, url:'https://commons.nicovideo.jp/material/'+nc_id});
-						span_title.addEventListener('click', func.bind(this, response.commons_id));
-						mini_player.appendChild(span_title);
-						const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
-							const img = document.createElement('img');
-							img.src   = icons[str];
-							img.title = icon_captions[str];
-							mini_player.appendChild(img);
-						});
-						main.appendChild(mini_player);
+						addMiniPlayer(response.tab_id, response.title, response.commons_id);
 					}
 				});
 			});
 		});
-		/* 表示テスト用のハリボテプレイヤーを配置 */
-		// const main        = document.querySelector('main');
-		// const mini_player = document.createElement('div');
-		// mini_player.classList.add('mini-player');
-		// const span_title     = document.createElement('span');
-		// span_title.innerText = '【Chrome拡張機能】サンプルテキストです。【特に何があるわけではない】';
-		// span_title.classList.add('mini-player-title');
-		// mini_player.appendChild(span_title);
-		// const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
-		// 	const img = document.createElement('img');
-		// 	img.src   = icons[str];
-		// 	img.title = icon_captions[str];
-		// 	mini_player.appendChild(img);
-		// });
-		// main.appendChild(mini_player);
+		/* 再生中のタブ用のミニプレイヤーを用意 */
+		browser.tabs.query({url:'*://commons.nicovideo.jp/*'}, tabs => {
+			for (let i in tabs) {
+				let tab_id = tabs[i].id;
+				browser.tabs.sendMessage(tab_id, {ctrl:'get-autoplay-status', tab_id:tab_id}, response => {
+					if (response.autoplaying) {
+						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.now_playing);
+					}
+				});
+			}
+		});
 	});
 });
 let ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
 let ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
+
+
+/* --- ミニプレイヤーの追加(関数化) --- */
+const addMiniPlayer = (tab_id, title, commons_id, now_playing = false) => {
+	const main        = document.querySelector('main');
+	const mini_player = document.createElement('div');
+	mini_player.id    = 'player-tab-' + String(tab_id);
+	mini_player.classList.add('mini-player');
+	const span_title     = document.createElement('span');
+	span_title.innerText = title;
+	span_title.classList.add('mini-player-title');
+	let func = nc_id => browser.tabs.create({active:true, url:'https://commons.nicovideo.jp/material/'+nc_id});
+	span_title.addEventListener('click', func.bind(this, commons_id));
+	mini_player.appendChild(span_title);
+	const icon_elements = Object.keys(icons).map(str => {
+		const img = document.createElement('img');
+		if (str !== 'icon_play' && !now_playing) {
+			img.src   = icons[str];
+			img.title = icon_captions[str];
+			mini_player.appendChild(img);
+		} else if (str !== 'icon_pause' && now_playing) {
+			img.src   = icons[str];
+			img.title = icon_captions[str];
+			mini_player.appendChild(img);
+		}
+	});
+	main.appendChild(mini_player);
+};
 
 
 /* --- 音量バーからの反映 --- */

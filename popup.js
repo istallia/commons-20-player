@@ -63,7 +63,7 @@ let ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
 
 
 /* --- ミニプレイヤーの追加(関数化) --- */
-const addMiniPlayer = (tab_id, title, commons_id, now_playing = false) => {
+const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 	const main        = document.querySelector('main');
 	const mini_player = document.createElement('div');
 	mini_player.id    = 'player-tab-' + String(tab_id);

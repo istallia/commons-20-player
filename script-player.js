@@ -12,6 +12,7 @@ let ista_audio_obj       = [];
 let ista_audio_link      = [];
 let ista_audio_type      = [];
 let ista_last_play_index = null;
+let ista_autoplaying     = false;
 
 
 /* --- 指定番号の音声を再生する関数 --- */
@@ -120,8 +121,9 @@ if (target !== null) {
 }
 
 
-/* --- 音量変更時の反映 --- */
+/* --- ポップアップからの操作 --- */
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	/* 音量の反映 */
 	if (request.ctrl === 'update-volume') {
 		/* まだ再生していない場合は無視 */
 		if (ista_last_play_index === null || ista_audio_obj[ista_last_play_index] === null) return;
@@ -134,5 +136,16 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		let ista_volume = ista_volume_se;
 		if (ista_audio_type[ista_last_play_index] === 'audio01') ista_volume = ista_volume_bgm;
 		ista_audio_obj[ista_last_play_index].volume = ista_volume / 100;
+		return;
+	}
+	/* 連続再生の開始 */
+	if (request.ctrl === 'start-autoplay') {
+		if (ista_audio_obj.length < 1) {
+			sendResponse({is_playable:false, tab_id:request.tab_id});
+			return;
+		}
+		ista_autoplaying = true;
+		sendResponse({is_playable:true, tab_id:request.tab_id});
+		return;
 	}
 });

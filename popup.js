@@ -38,22 +38,24 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (tabs.length < 1) return;
 				const tab = tabs[0];
 				browser.tabs.sendMessage(tab.id, {ctrl:'start-autoplay', tab_id:tab.id}, response => {
-					/* ミニプレイヤーを配置 */
-					const main        = document.querySelector('main');
-					const mini_player = document.createElement('div');
-					mini_player.id    = 'player-tab-' + String(response.tab_id);
-					mini_player.classList.add('mini-player');
-					const span_title     = document.createElement('span');
-					span_title.innerText = '(準備中...)';
-					span_title.classList.add('mini-player-title');
-					mini_player.appendChild(span_title);
-					const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
-						const img = document.createElement('img');
-						img.src   = icons[str];
-						img.title = icon_captions[str];
-						mini_player.appendChild(img);
-					});
-					main.appendChild(mini_player);
+					if (response.is_playable) {
+						/* ミニプレイヤーを配置 */
+						const main        = document.querySelector('main');
+						const mini_player = document.createElement('div');
+						mini_player.id    = 'player-tab-' + String(response.tab_id);
+						mini_player.classList.add('mini-player');
+						const span_title     = document.createElement('span');
+						span_title.innerText = '(準備中...)';
+						span_title.classList.add('mini-player-title');
+						mini_player.appendChild(span_title);
+						const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
+							const img = document.createElement('img');
+							img.src   = icons[str];
+							img.title = icon_captions[str];
+							mini_player.appendChild(img);
+						});
+						main.appendChild(mini_player);
+					}
 				});
 			});
 		});

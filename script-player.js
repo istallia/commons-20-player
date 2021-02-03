@@ -37,6 +37,7 @@ const playAudio = (num, event) => {
 			ista_audio_obj[ista_last_play_index].currentTime = 0;
 			if (num === ista_last_play_index && ista_audio_link[num].innerText === '再生中') {
 				ista_audio_link[ista_last_play_index].innerText = '試聴';
+				ista_nowplaying                                 = false;
 				return;
 			}
 			ista_audio_link[ista_last_play_index].innerText = '試聴';
@@ -50,6 +51,7 @@ const playAudio = (num, event) => {
 		}, () => {
 			ista_audio_link[num].innerText = '試聴不可';
 			ista_audio_obj[num]            = null;
+			ista_nowplaying                = false;
 		});
 		ista_last_play_index = num;
 	});

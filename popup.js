@@ -106,3 +106,21 @@ let applyVolumeToBackground = event => {
 		}
 	});
 };
+
+
+/* --- タブが更新されたら --- */
+browser.tabs.onUpdated.addListener((tab_id, change_info, tab) => {
+	if (['loading', 'complete'].indexOf(change_info.status) > -1 || change_info.url !== undefined) {
+		/* ミニプレイヤーがあれば破棄 */
+		const mini_player = document.getElementById('player-tab-'+String(tab_id));
+		if (mini_player) mini_player.remove();
+	}
+});
+
+
+/* --- タブが閉じられたら --- */
+browser.tabs.onRemoved.addListener((tab_id, remove_info) => {
+	/* ミニプレイヤーがあれば破棄 */
+	const mini_player = document.getElementById('player-tab-'+String(tab_id));
+	if (mini_player) mini_player.remove();
+});

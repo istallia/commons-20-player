@@ -76,11 +76,11 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = false) => {
 	mini_player.appendChild(span_title);
 	const icon_elements = Object.keys(icons).map(str => {
 		const img = document.createElement('img');
-		if (str !== 'icon_play' && !now_playing) {
+		if (str !== 'icon_pause' && !now_playing) {
 			img.src   = icons[str];
 			img.title = icon_captions[str];
 			mini_player.appendChild(img);
-		} else if (str !== 'icon_pause' && now_playing) {
+		} else if (str !== 'icon_play' && now_playing) {
 			img.src   = icons[str];
 			img.title = icon_captions[str];
 			mini_player.appendChild(img);

@@ -161,16 +161,24 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			sendResponse({is_playable:false, tab_id:request.tab_id});
 			return;
 		}
-		/* 再生を開始する */
-		playAudio(0, null);
-		/* 返答を送信 */
 		ista_autoplaying = true;
-		sendResponse({
-			is_playable : true,
-			tab_id      : request.tab_id,
-			title       : ista_audio_title[0],
-			commons_id  : ista_audio_nc_id[0]
-		});
+		/* 再生を開始する */
+		if (!ista_nowplaying) {
+			playAudio(0, null);
+			sendResponse({
+				is_playable : true,
+				tab_id      : request.tab_id,
+				title       : ista_audio_title[0],
+				commons_id  : ista_audio_nc_id[0]
+			});
+		} else {
+			sendResponse({
+				is_playable : true,
+				tab_id      : request.tab_id,
+				title       : ista_audio_title[ista_last_play_index],
+				commons_id  : ista_audio_nc_id[ista_last_play_index]
+			});
+		}
 		return;
 	}
 	/* 連続再生ステータスの返信 */

@@ -17,7 +17,7 @@ const icon_captions = {
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
 document.addEventListener('DOMContentLoaded', () => {
-	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
+	browser.runtime.sendMessage({ctrl:'get-volume'}, params => {
 		/* 音量の読み出し */
 		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
 		sessionStorage.setItem('ista_volume_se' , params['volume_se']);
@@ -32,25 +32,140 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('ista-volume-bgm').addEventListener('change', applyVolumeToBackground);
 		document.getElementById('ista-volume-se').addEventListener('input', applyVolumeToBackground);
 		document.getElementById('ista-volume-se').addEventListener('change', applyVolumeToBackground);
-		/* 表示テスト用のハリボテプレイヤーを配置 */
-		const main        = document.querySelector('main');
-		const mini_player = document.createElement('div');
-		mini_player.classList.add('mini-player');
-		const span_title     = document.createElement('span');
-		span_title.innerText = '【Chrome拡張機能】サンプルテキストです。【特に何があるわけではない】';
-		span_title.classList.add('mini-player-title');
-		mini_player.appendChild(span_title);
-		const icon_elements = Object.keys(icons).filter(str => str !== 'icon_play').map(str => {
-			const img = document.createElement('img');
-			img.src   = icons[str];
-			img.title = icon_captions[str];
-			mini_player.appendChild(img);
+		/* 連続再生を開始するためのボタンを登録 */
+		document.getElementById('start-autoplay').addEventListener('click', () => {
+			browser.tabs.query({active:true, currentWindow:true, url:'*://commons.nicovideo.jp/*'}, tabs => {
+				if (tabs.length < 1) return;
+				const tab = tabs[0];
+				browser.tabs.sendMessage(tab.id, {ctrl:'start-autoplay', tab_id:tab.id}, response => {
+					if (response.is_playable) {
+						/* ミニプレイヤーを配置 */
+						addMiniPlayer(response.tab_id, response.title, response.commons_id);
+					}
+				});
+			});
 		});
-		main.appendChild(mini_player);
+		/* 再生中のタブ用のミニプレイヤーを用意 */
+		browser.tabs.query({url:'*://commons.nicovideo.jp/*'}, tabs => {
+			for (let i in tabs) {
+				let tab_id = tabs[i].id;
+				browser.tabs.sendMessage(tab_id, {ctrl:'get-autoplay-status', tab_id:tab_id}, response => {
+					if (!response) return;
+					if (response.autoplaying) {
+						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.now_playing);
+					}
+				});
+			}
+		});
+	});
+	/* そもそもコモンズのタブじゃなかったらボタン有効にしなくていいよね */
+	browser.tabs.query({active:true, currentWindow:true, url:'*://commons.nicovideo.jp/*'}, tabs => {
+		if (tabs.length < 1) document.getElementById('start-autoplay').disabled = true;
 	});
 });
 let ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
 let ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
+
+
+/* --- ミニプレイヤーの追加(関数化) --- */
+const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
+	const main        = document.getElementById('mini-player');
+	const mini_player = document.createElement('div');
+	mini_player.id    = 'player-tab-' + String(tab_id);
+	mini_player.setAttribute('tab_id', String(tab_id));
+	mini_player.classList.add('mini-player');
+	const span_title     = document.createElement('span');
+	span_title.innerText = title;
+	span_title.classList.add('mini-player-title');
+	span_title.setAttribute('commons_id', commons_id);
+	let func = span => browser.tabs.create({active:true, url:'https://commons.nicovideo.jp/material/'+span.getAttribute('commons_id')});
+	span_title.addEventListener('click', func.bind(this, span_title));
+	mini_player.appendChild(span_title);
+	const icon_elements = Object.keys(icons).map(str => {
+		const img = document.createElement('img');
+		if (str === 'icon_play' || str === 'icon_pause') img.addEventListener('click', playAndPause);
+		if (str === 'icon_next') img.addEventListener('click', nextAudio);
+		if (str === 'icon_back') img.addEventListener('click', backAudio);
+		if (str === 'icon_stop') img.addEventListener('click', stopAutoplay);
+		if (str !== 'icon_pause' && !now_playing) {
+			img.src   = icons[str];
+			img.title = icon_captions[str];
+			mini_player.appendChild(img);
+		} else if (str !== 'icon_play' && now_playing) {
+			img.src   = icons[str];
+			img.title = icon_captions[str];
+			mini_player.appendChild(img);
+		}
+	});
+	main.appendChild(mini_player);
+	func = id => {
+		browser.tabs.sendMessage(id, {ctrl:'get-autoplay-status', tab_id:id}, response => {
+			const mini_player = document.getElementById('player-tab-' + String(response.tab_id));
+			if (mini_player) {
+				const span     = mini_player.querySelector('span.mini-player-title');
+				const img      = mini_player.querySelector('img[title="'+icon_captions['icon_play']+'"], img[title="'+icon_captions['icon_pause']+'"]');
+				span.innerText = response.title;
+				span.setAttribute('commons_id', response.commons_id);
+				icon_type      = 'icon_play';
+				if (response.now_playing) icon_type = 'icon_pause';
+				img.src   = icons[icon_type];
+				img.title = icon_captions[icon_type];
+			}
+		});
+	};
+	const interval_id = setInterval(func.bind(this, tab_id), 250);
+	mini_player.setAttribute('interval_id', interval_id);
+};
+
+
+/* --- 再生/一時停止ボタンの処理 --- */
+const playAndPause = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	if (img.title === icon_captions['icon_play']) {
+		browser.tabs.sendMessage(tab_id, {ctrl:'play-audio'}, response => {
+			img.src   = icons['icon_pause'];
+			img.title = icon_captions['icon_pause'];
+		});
+	} else {
+		browser.tabs.sendMessage(tab_id, {ctrl:'pause-audio'}, response => {
+			img.src   = icons['icon_play'];
+			img.title = icon_captions['icon_play'];
+		});
+	}
+};
+
+
+/* --- 次の/前のサウンドの処理 --- */
+const nextAudio = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	browser.tabs.sendMessage(tab_id, {ctrl:'next-audio'}, response => {
+		const span     = img.parentNode.querySelector('span.mini-player-title');
+		span.innerText = response.title;
+		span.setAttribute('commons_id', response.commons_id);
+	});
+};
+const backAudio = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	browser.tabs.sendMessage(tab_id, {ctrl:'back-audio'}, response => {
+		const span     = img.parentNode.querySelector('span.mini-player-title');
+		span.innerText = response.title;
+		span.setAttribute('commons_id', response.commons_id);
+	});
+};
+
+
+/* --- 連続再生の停止処理 --- */
+const stopAutoplay = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	browser.tabs.sendMessage(tab_id, {ctrl:'stop-autoplay'}, response => {
+		clearInterval(Number(img.parentNode.getAttribute('interval_id')));
+		img.parentNode.remove();
+	});
+};
 
 
 /* --- 音量バーからの反映 --- */
@@ -77,3 +192,45 @@ let applyVolumeToBackground = event => {
 		}
 	});
 };
+
+
+/* --- メッセージ受信 --- */
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.ctrl === 'update-title') {
+		const mini_player = document.getElementById('player-tab-' + String(request.tab_id));
+		if (mini_player) {
+			const span     = mini_player.querySelector('span.mini-player-title');
+			span.innerText = request.title;
+			let icon_type  = 'icon_play';
+			if (request.now_playing) icon_type = 'icon_pause';
+			span.setAttribute('commons_id', request.commons_id);
+			const img = mini_player.querySelector('img[title="' + icon_captions[icon_type] + '"]');
+			img.src   = icons[icon_type];
+			img.title = icon_captions[icon_type];
+		}
+	}
+});
+
+
+/* --- タブが更新されたら --- */
+browser.tabs.onUpdated.addListener((tab_id, change_info, tab) => {
+	if (['loading', 'complete'].indexOf(change_info.status) > -1 || change_info.url !== undefined) {
+		/* ミニプレイヤーがあれば破棄 */
+		const mini_player = document.getElementById('player-tab-'+String(tab_id));
+		if (mini_player) {
+			clearInterval(Number(mini_player.getAttribute('interval_id')));
+			mini_player.remove();
+		}
+	}
+});
+
+
+/* --- タブが閉じられたら --- */
+browser.tabs.onRemoved.addListener((tab_id, remove_info) => {
+	/* ミニプレイヤーがあれば破棄 */
+	const mini_player = document.getElementById('player-tab-'+String(tab_id));
+	if (mini_player) {
+		clearInterval(Number(mini_player.getAttribute('interval_id')));
+		mini_player.remove();
+	}
+});

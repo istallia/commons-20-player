@@ -58,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 		});
 	});
+	/* そもそもコモンズのタブじゃなかったらボタン有効にしなくていいよね */
+	browser.tabs.query({active:true, currentWindow:true, url:'*://commons.nicovideo.jp/*'}, tabs => {
+		if (tabs.length < 1) document.getElementById('start-autoplay').disabled = true;
+	});
 });
 let ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
 let ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');

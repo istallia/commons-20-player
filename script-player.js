@@ -87,9 +87,9 @@ const appendPlayer = parent => {
 	audio_obj.src     = 'https://commons.nicovideo.jp/api/preview/get?cid=' + thumb_id;
 	let ended_func = (n, event) => {
 		ista_audio_link[n].innerText = '試聴';
-		ista_nowplaying              = false;
 		if (ista_autoplaying && n < ista_audio_obj.length - 1) {
 			playAudio(n+1, null);
+			return;
 		} else if (ista_autoplaying) {
 			browser.runtime.sendMessage({
 				ctrl        : 'update-title',
@@ -98,6 +98,7 @@ const appendPlayer = parent => {
 				now_playing : false
 			});
 		}
+		ista_nowplaying = false;
 	};
 	audio_obj.addEventListener('ended', ended_func.bind(this, ista_audio_obj.length));
 	ista_audio_obj.push(audio_obj);

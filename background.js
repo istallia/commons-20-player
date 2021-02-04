@@ -2,7 +2,7 @@
 if (typeof browser === 'undefined') browser = chrome;
 
 
-/* --- 音量の取得 --- */
+/* --- 音量の取得など --- */
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	ista_volume_bgm = Number(localStorage.getItem('ista_volume_bgm') || '100');
 	ista_volume_se  = Number(localStorage.getItem('ista_volume_se') || '100');
@@ -17,5 +17,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		ista_volume_se  = Number(request.se);
 		localStorage.setItem('ista_volume_bgm', ista_volume_bgm);
 		localStorage.setItem('ista_volume_se' , ista_volume_se);
+		return;
+	} else if (request.ctrl === 'update-title') {
+		browser.runtime.sendMessage(request);
+		return;
 	}
 });

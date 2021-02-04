@@ -17,7 +17,7 @@ const icon_captions = {
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
 document.addEventListener('DOMContentLoaded', () => {
-	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
+	browser.runtime.sendMessage({ctrl:'get-volume'}, params => {
 		/* 音量の読み出し */
 		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
 		sessionStorage.setItem('ista_volume_se' , params['volume_se']);
@@ -94,6 +94,23 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 		}
 	});
 	main.appendChild(mini_player);
+	func = id => {
+		browser.tabs.sendMessage(id, {ctrl:'get-autoplay-status', tab_id:id}, response => {
+			const mini_player = document.getElementById('player-tab-' + String(response.tab_id));
+			if (mini_player) {
+				const span     = mini_player.querySelector('span.mini-player-title');
+				const img      = mini_player.querySelector('img[title="'+icon_captions['icon_play']+'"], img[title="'+icon_captions['icon_pause']+'"]');
+				span.innerText = response.title;
+				span.setAttribute('commons_id', response.commons_id);
+				icon_type      = 'icon_play';
+				if (response.now_playing) icon_type = 'icon_pause';
+				img.src   = icons[icon_type];
+				img.title = icon_captions[icon_type];
+			}
+		});
+	};
+	const interval_id = setInterval(func.bind(this, tab_id), 100);
+	mini_player.setAttribute('interval_id', interval_id);
 };
 
 
@@ -141,6 +158,7 @@ const stopAutoplay = event => {
 	const img    = event.currentTarget;
 	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
 	browser.tabs.sendMessage(tab_id, {ctrl:'stop-autoplay'}, response => {
+		clearInterval(Number(img.parentNode.getAttribute('interval_id')));
 		img.parentNode.remove();
 	});
 };
@@ -172,12 +190,33 @@ let applyVolumeToBackground = event => {
 };
 
 
+/* --- メッセージ受信 --- */
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.ctrl === 'update-title') {
+		const mini_player = document.getElementById('player-tab-' + String(request.tab_id));
+		if (mini_player) {
+			const span     = mini_player.querySelector('span.mini-player-title');
+			span.innerText = request.title;
+			let icon_type  = 'icon_play';
+			if (request.now_playing) icon_type = 'icon_pause';
+			span.setAttribute('commons_id', request.commons_id);
+			const img = mini_player.querySelector('img[title="' + icon_captions[icon_type] + '"]');
+			img.src   = icons[icon_type];
+			img.title = icon_captions[icon_type];
+		}
+	}
+});
+
+
 /* --- タブが更新されたら --- */
 browser.tabs.onUpdated.addListener((tab_id, change_info, tab) => {
 	if (['loading', 'complete'].indexOf(change_info.status) > -1 || change_info.url !== undefined) {
 		/* ミニプレイヤーがあれば破棄 */
 		const mini_player = document.getElementById('player-tab-'+String(tab_id));
-		if (mini_player) mini_player.remove();
+		if (mini_player) {
+			clearInterval(Number(mini_player.getAttribute('interval_id')));
+			mini_player.remove();
+		}
 	}
 });
 
@@ -186,5 +225,8 @@ browser.tabs.onUpdated.addListener((tab_id, change_info, tab) => {
 browser.tabs.onRemoved.addListener((tab_id, remove_info) => {
 	/* ミニプレイヤーがあれば破棄 */
 	const mini_player = document.getElementById('player-tab-'+String(tab_id));
-	if (mini_player) mini_player.remove();
+	if (mini_player) {
+		clearInterval(Number(mini_player.getAttribute('interval_id')));
+		mini_player.remove();
+	}
 });

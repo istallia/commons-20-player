@@ -48,6 +48,12 @@ const playAudio = (num, event) => {
 		ista_audio_obj[num].play().then(() => {
 			ista_audio_link[num].innerText = '再生中';
 			ista_nowplaying                = true;
+			browser.runtime.sendMessage({
+				ctrl        : 'update-title',
+				title       : ista_audio_title[num],
+				commons_id  : ista_audio_nc_id[num],
+				now_playing : true
+			});
 		}, () => {
 			ista_audio_link[num].innerText = '試聴不可';
 			ista_audio_obj[num]            = null;
@@ -82,7 +88,16 @@ const appendPlayer = parent => {
 	let ended_func = (n, event) => {
 		ista_audio_link[n].innerText = '試聴';
 		ista_nowplaying              = false;
-		if (ista_autoplaying && n < ista_audio_obj.length - 1) playAudio(n+1, null);
+		if (ista_autoplaying && n < ista_audio_obj.length - 1) {
+			playAudio(n+1, null);
+		} else if (ista_autoplaying) {
+			browser.runtime.sendMessage({
+				ctrl        : 'update-title',
+				title       : ista_audio_title[ista_last_play_index],
+				commons_id  : ista_audio_nc_id[ista_last_play_index],
+				now_playing : false
+			});
+		}
 	};
 	audio_obj.addEventListener('ended', ended_func.bind(this, ista_audio_obj.length));
 	ista_audio_obj.push(audio_obj);

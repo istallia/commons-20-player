@@ -109,7 +109,7 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 			}
 		});
 	};
-	const interval_id = setInterval(func.bind(this, tab_id), 100);
+	const interval_id = setInterval(func.bind(this, tab_id), 250);
 	mini_player.setAttribute('interval_id', interval_id);
 };
 

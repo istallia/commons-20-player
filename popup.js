@@ -82,6 +82,7 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 		if (str === 'icon_play' || str === 'icon_pause') img.addEventListener('click', playAndPause);
 		if (str === 'icon_next') img.addEventListener('click', nextAudio);
 		if (str === 'icon_back') img.addEventListener('click', backAudio);
+		if (str === 'icon_stop') img.addEventListener('click', stopAutoplay);
 		if (str !== 'icon_pause' && !now_playing) {
 			img.src   = icons[str];
 			img.title = icon_captions[str];
@@ -131,6 +132,16 @@ const backAudio = event => {
 		const span     = img.parentNode.querySelector('span.mini-player-title');
 		span.innerText = response.title;
 		span.setAttribute('commons_id', response.commons_id);
+	});
+};
+
+
+/* --- 連続再生の停止処理 --- */
+const stopAutoplay = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	browser.tabs.sendMessage(tab_id, {ctrl:'stop-autoplay'}, response => {
+		img.parentNode.remove();
 	});
 };
 

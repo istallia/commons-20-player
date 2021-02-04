@@ -181,6 +181,16 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		}
 		return;
 	}
+	/* 連続再生の停止 */
+	if (request.ctrl === 'stop-autoplay') {
+		ista_audio_link[ista_last_play_index].innerText = '試聴';
+		ista_audio_obj[ista_last_play_index].pause();
+		ista_audio_obj[ista_last_play_index].currentTime = 0;
+		ista_nowplaying                                  = false;
+		ista_autoplaying                                 = false;
+		sendResponse({});
+		return;
+	}
 	/* 連続再生ステータスの返信 */
 	if (request.ctrl === 'get-autoplay-status') {
 		if (!ista_autoplaying) {

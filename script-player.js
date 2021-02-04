@@ -195,6 +195,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.ctrl === 'play-audio') {
 		playAudio(ista_last_play_index, null);
 		sendResponse({});
+		return;
 	}
 	if (request.ctrl === 'pause-audio' && ista_nowplaying) {
 		ista_audio_link[ista_last_play_index].innerText = '試聴';
@@ -202,5 +203,23 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		ista_audio_obj[ista_last_play_index].currentTime = 0;
 		ista_nowplaying                                  = false;
 		sendResponse({});
+		return;
+	}
+	/* 次の/前のサウンド */
+	if (request.ctrl === 'next-audio') {
+		const new_play_index = (ista_last_play_index + 1) % ista_audio_obj.length;
+		if (ista_nowplaying) playAudio(new_play_index, null);
+		sendResponse({
+			title      : ista_audio_title[new_play_index],
+			commons_id : ista_audio_nc_id[new_play_index]
+		});
+	}
+	if (request.ctrl === 'back-audio') {
+		const new_play_index = Math.max(ista_last_play_index-1, 0);
+		if (ista_nowplaying) playAudio(new_play_index, null);
+		sendResponse({
+			title      : ista_audio_title[new_play_index],
+			commons_id : ista_audio_nc_id[new_play_index]
+		});
 	}
 });

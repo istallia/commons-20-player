@@ -65,7 +65,7 @@ let ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
 
 /* --- ミニプレイヤーの追加(関数化) --- */
 const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
-	const main        = document.querySelector('main');
+	const main        = document.getElementById('mini-player');
 	const mini_player = document.createElement('div');
 	mini_player.id    = 'player-tab-' + String(tab_id);
 	mini_player.setAttribute('tab_id', String(tab_id));
@@ -73,12 +73,15 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 	const span_title     = document.createElement('span');
 	span_title.innerText = title;
 	span_title.classList.add('mini-player-title');
-	let func = nc_id => browser.tabs.create({active:true, url:'https://commons.nicovideo.jp/material/'+nc_id});
-	span_title.addEventListener('click', func.bind(this, commons_id));
+	span_title.setAttribute('commons_id', commons_id);
+	let func = span => browser.tabs.create({active:true, url:'https://commons.nicovideo.jp/material/'+span.getAttribute('commons_id')});
+	span_title.addEventListener('click', func.bind(this, span_title));
 	mini_player.appendChild(span_title);
 	const icon_elements = Object.keys(icons).map(str => {
 		const img = document.createElement('img');
 		if (str === 'icon_play' || str === 'icon_pause') img.addEventListener('click', playAndPause);
+		if (str === 'icon_next') img.addEventListener('click', nextAudio);
+		if (str === 'icon_back') img.addEventListener('click', backAudio);
 		if (str !== 'icon_pause' && !now_playing) {
 			img.src   = icons[str];
 			img.title = icon_captions[str];
@@ -108,6 +111,27 @@ const playAndPause = event => {
 			img.title = icon_captions['icon_play'];
 		});
 	}
+};
+
+
+/* --- 次の/前のサウンドの処理 --- */
+const nextAudio = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	browser.tabs.sendMessage(tab_id, {ctrl:'next-audio'}, response => {
+		const span     = img.parentNode.querySelector('span.mini-player-title');
+		span.innerText = response.title;
+		span.setAttribute('commons_id', response.commons_id);
+	});
+};
+const backAudio = event => {
+	const img    = event.currentTarget;
+	const tab_id = Number(img.parentNode.getAttribute('tab_id'));
+	browser.tabs.sendMessage(tab_id, {ctrl:'back-audio'}, response => {
+		const span     = img.parentNode.querySelector('span.mini-player-title');
+		span.innerText = response.title;
+		span.setAttribute('commons_id', response.commons_id);
+	});
 };
 
 

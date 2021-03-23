@@ -16,7 +16,7 @@ const applyVolume = () => {
 	let cmn_audio = document.getElementsByTagName('audio');
 	if (cmn_audio.length > 0) {
 		/* 素材種別の確認 */
-		let cmn_thumb = document.querySelector('div.commons_thumbnail > img').getAttribute('src');
+		let cmn_thumb = document.querySelector('div.materialPreviewSmallThumbArea > img').getAttribute('src');
 		cmn_thumb     = cmn_thumb.slice(-11, -4);
 		if (cmn_thumb.slice(0,5) === 'audio') {
 			let cmn_volume = ista_volume_se;

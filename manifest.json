@@ -1,7 +1,7 @@
 {
 	"manifest_version" : 2,
 	"name"             : "コモンズ20プレイヤー",
-	"version"          : "0.3.1",
+	"version"          : "0.3.2",
 	"description"      : "ニコニ・コモンズのBGM/SE素材を一覧ページで再生できるようにする拡張機能",
 	"author"           : "istallia",
 	"icons" : {

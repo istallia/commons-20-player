@@ -108,7 +108,7 @@ const appendPlayer = parent => {
 	ista_audio_nc_id.push('nc'+thumb_id);
 	let alt_parent = parent;
 	if (alt_parent.tagName.toLowerCase() !== 'li') alt_parent = alt_parent.parentNode;
-	let title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a');
+	let title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a, a.title_link[href]');
 	ista_audio_title.push(title_element.innerText);
 	/* テキストリンクをdivに入れて追加 */
 	let div_link = document.createElement('div');
@@ -132,7 +132,8 @@ let ista_put_func = () => {
 		'div.thumb_list_thumb',                // ユーザーページ
 		'li.materialsItemCardArea',            // ランキング(トップページ)
 		'div.materialsItemCardArea',           // 新着作品(トップページ)
-		'#index_box td.log_border'             // ランキング
+		'#index_box td.log_border',            // ランキング
+		'li[class^="item"] > div.thum'         // コンテンツツリー
 	];
 	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a img[src]').join(', '))];
 	for (let i in ista_divs) {
@@ -145,7 +146,7 @@ let ista_put_func = () => {
 };
 setTimeout(ista_put_func, 0);
 window.addEventListener('load', ista_put_func);
-const target = document.querySelector("#index_box, #index_content, section.searchCardsArea, div.materialsContentsArea");
+const target = document.querySelector("#index_box, #index_content, section.searchCardsArea, div.materialsContentsArea, div.tree-view");
 if (target !== null) {
 	const observer = new MutationObserver(records => {
 		if (records[0].addedNodes.length > 0) setTimeout(ista_put_func, 0);

@@ -1,12 +1,15 @@
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
-ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
-ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
+ista_volume_master = Number(sessionStorage.getItem('ista_volume_master') || '100');
+ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
+ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || '100');
 browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
-	sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
-	sessionStorage.setItem('ista_volume_se' , params['volume_se']);
-	ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
-	ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
+	sessionStorage.setItem('ista_volume_master', params['volume_master']);
+	sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
+	sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
+	ista_volume_master = Number(sessionStorage.getItem('ista_volume_master') || '100');
+	ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
+	ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || '100');
 	applyVolume();
 });
 

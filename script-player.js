@@ -1,13 +1,16 @@
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
 browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
-	sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
-	sessionStorage.setItem('ista_volume_se' , params['volume_se']);
-	ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
-	ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se') || '100');
+	sessionStorage.setItem('ista_volume_master', params['volume_master']);
+	sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
+	sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
+	ista_volume_master = Number(sessionStorage.getItem('ista_volume_master') || '100');
+	ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
+	ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || '100');
 });
-let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm') || '100');
-let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se') || '100');
+let ista_volume_master   = Number(sessionStorage.getItem('ista_volume_master') || '100');
+let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
+let ista_volume_se       = Number(sessionStorage.getItem('ista_volume_se')     || '100');
 let ista_audio_obj       = [];
 let ista_audio_link      = [];
 let ista_audio_type      = [];
@@ -22,15 +25,18 @@ let ista_nowplaying      = false;
 const playAudio = (num, event) => {
 	/* 音量の確認処理を挟む */
 	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
-		sessionStorage.setItem('ista_volume_bgm', params['volume_bgm']);
-		sessionStorage.setItem('ista_volume_se' , params['volume_se']);
-    ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm'));
-    ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se'));
+		sessionStorage.setItem('ista_volume_master', params['volume_master']);
+		sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
+		sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
+    ista_volume_master = Number(sessionStorage.getItem('ista_volume_master'));
+    ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm'));
+    ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se'));
 		/* インデックスを検証 */
 		if (num >= ista_audio_obj.length) return;
 		/* 素材種別に合わせて音量を設定 */
 		let ista_volume = ista_volume_se;
 		if (ista_audio_type[num] === 'audio01') ista_volume = ista_volume_bgm;
+		ista_volume *= ista_volume_master / 100;
 		/* 再生中の音声を停止 */
 		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
 			ista_audio_obj[ista_last_play_index].pause();
@@ -82,6 +88,7 @@ const appendPlayer = parent => {
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
 	if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
+	ista_volume *= ista_volume_master / 100;
 	/* Audioを用意 */
 	let audio_obj     = new Audio();
 	audio_obj.volume  = ista_volume / 100;
@@ -162,13 +169,16 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		/* まだ再生していない場合は無視 */
 		if (ista_last_play_index === null || ista_audio_obj[ista_last_play_index] === null) return;
 		/* 変数にも反映 */
-		sessionStorage.setItem('ista_volume_bgm', request.bgm);
-		sessionStorage.setItem('ista_volume_se' , request.se);
-    ista_volume_bgm = Number(sessionStorage.getItem('ista_volume_bgm'));
-    ista_volume_se  = Number(sessionStorage.getItem('ista_volume_se'));
+		sessionStorage.setItem('ista_volume_master', request.master);
+		sessionStorage.setItem('ista_volume_bgm'   , request.bgm);
+		sessionStorage.setItem('ista_volume_se'    , request.se);
+    ista_volume_master = Number(sessionStorage.getItem('ista_volume_master'));
+    ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm'));
+    ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se'));
 		/* 音量の調整 */
 		let ista_volume = ista_volume_se;
 		if (ista_audio_type[ista_last_play_index] === 'audio01') ista_volume = ista_volume_bgm;
+		ista_volume *= ista_volume_master / 100;
 		ista_audio_obj[ista_last_play_index].volume = ista_volume / 100;
 		return;
 	}

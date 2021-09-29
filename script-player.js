@@ -82,9 +82,7 @@ const appendPlayer = parent => {
 	thumb_url     = thumb_url.slice(-11, -4);
 	if (thumb_url.slice(0,5) !== 'audio') return;
 	/* コモンズIDを取り出す */
-	let thumb_id = parent.querySelector('a').getAttribute('href');
-	thumb_id     = thumb_id.split('/');
-	thumb_id     = thumb_id[thumb_id.length-1].slice(2);
+	const thumb_id = parent.querySelector('a').getAttribute('href').match(/(?<=\bnc)\d+/)[0];
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
 	if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;

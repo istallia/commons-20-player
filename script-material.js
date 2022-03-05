@@ -24,6 +24,7 @@ const applyVolume = () => {
 		if (cmn_thumb.slice(0,5) === 'audio') {
 			let cmn_volume = ista_volume_se;
 			if (cmn_thumb === 'audio01') cmn_volume = ista_volume_bgm;
+			cmn_volume *= ista_volume_master / 100;
 			/* 音量の設定 */
 			cmn_audio        = cmn_audio[0];
 			cmn_audio.volume = cmn_volume / 100;

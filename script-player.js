@@ -113,7 +113,7 @@ const appendPlayer = parent => {
 	ista_audio_nc_id.push('nc'+thumb_id);
 	let alt_parent = parent;
 	if (alt_parent.tagName.toLowerCase() !== 'li') alt_parent = alt_parent.parentNode;
-	let title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a, a.title_link[href]');
+	let title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a, a.title_link[href], div.contentArea > a');
 	ista_audio_title.push(title_element.innerText);
 	/* テキストリンクをdivに入れて追加 */
 	let div_link = document.createElement('div');
@@ -126,21 +126,24 @@ const appendPlayer = parent => {
 	parent.appendChild(div_link);
 	parent.classList.add('ista_cmn_player_parent');
 	ista_audio_link.push(a_link);
+	console.log(div_link);
 };
 
 
 /* --- 読み込み時の処理 --- */
 let ista_put_func = () => {
 	const ista_thumb_list = [
-		'li.searchItemCardArea',               // 検索
-		'tr[id^="material_"] > td.log_border', // ユーザー投稿素材一覧
-		'div.thumb_list_thumb',                // ユーザーページ
-		'li.materialsItemCardArea',            // ランキング(トップページ)
-		'div.materialsItemCardArea',           // 新着作品(トップページ)
-		'#index_box td.log_border',            // ランキング
-		'li[class^="item"] > div.thum'         // コンテンツツリー
+		'li.searchItemCardArea',                        // 検索
+		'tr[id^="material_"] > td.log_border',          // ユーザー投稿素材一覧
+		'div.thumb_list_thumb',                         // ユーザーページ
+		'li.materialsItemCardArea',                     // ランキング(トップページ)
+		'div.materialsItemCardArea',                    // 新着作品(トップページ)
+		'#index_box td.log_border',                     // ランキング
+		'div.parentsCardArea',                          // コンテンツツリー
+		'ul.childrenContentsCardList > li.childrenItem' // 小作品
 	];
 	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a img[src]').join(', '))];
+	console.log(ista_divs);
 	for (let i in ista_divs) {
 		if (ista_divs[i].parentNode.parentNode.tagName.toLowerCase() === 'a') {
 			appendPlayer(ista_divs[i].parentNode.parentNode.parentNode);
@@ -151,7 +154,7 @@ let ista_put_func = () => {
 };
 setTimeout(ista_put_func, 0);
 window.addEventListener('load', ista_put_func);
-const target = document.querySelector("#index_box, #index_content, section.searchCardsArea, div.materialsContentsArea, div.tree-view");
+const target = document.querySelector("#index_box, #index_content, section.searchCardsArea, div.materialsContentsArea, div.tree-view, section.p-contentsTreeViewPage, section.p-treeParentsPage");
 if (target !== null) {
 	const observer = new MutationObserver(records => {
 		if (records[0].addedNodes.length > 0) setTimeout(ista_put_func, 0);

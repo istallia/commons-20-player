@@ -28,6 +28,12 @@ li.item2 > div.thum > div.ista_cmn_player > a {
 	height  : auto;
 	padding : 0px;
 }
+li[data-commons-kind="tree-item-card"] > div.parentsCardArea div.ista_cmn_player {
+	top : 1rem;
+}
+ul.childrenContentsCardList > li.childrenItem div.ista_cmn_player {
+	top : 1rem;
+}
 div.ista_cmn_player > a {
 	background       : none !important;
 	background-color : white !important;

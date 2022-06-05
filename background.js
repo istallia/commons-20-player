@@ -42,5 +42,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	} else if (request.ctrl === 'update-title') {
 		browser.runtime.sendMessage(request);
 		return;
+	} else if (request.ctrl === 'check-bookmarks') {
+		browser.bookmarks.search('https://commons.nicovideo.jp/material/nc', nodes => {
+			sendResponse({registered:nodes.some(node => node.url.indexOf(request.id) > -1)});
+		});
+		return true;
 	}
 });

@@ -13,7 +13,8 @@
 		{
 			"matches" : ["*://commons.nicovideo.jp/*"],
 			"js"      : ["script-player.js"],
-			"css"     : ["style-player.css"]
+			"css"     : ["style-player.css"],
+			"run_at"  : "document_end"
 		},
 		{
 			"matches" : ["*://commons.nicovideo.jp/material/*"],

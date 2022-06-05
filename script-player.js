@@ -148,7 +148,7 @@ const appendPlayer = parent => {
 
 
 /* --- 読み込み時の処理 --- */
-let ista_put_func = () => {
+const addPlayerToCards = () => {
 	const ista_thumb_list = [
 		'li.searchItemCardArea',                        // 検索
 		'tr[id^="material_"] > td.log_border',          // ユーザー投稿素材一覧
@@ -168,16 +168,18 @@ let ista_put_func = () => {
 			appendPlayer(ista_divs[i].parentNode.parentNode);
 		}
 	}
+	const target = document.querySelector("#index_box, #index_content, section.searchCardsArea, div.materialsContentsArea, div.tree-view, section.p-contentsTreeViewPage, section.p-treeParentsPage");
+	if (target && !target.classList.contains('ista-observing')) {
+		const observer = new MutationObserver(records => {
+			if (records[0].addedNodes.length > 0) setTimeout(addPlayerToCards, 0);
+		});
+		observer.observe(target, {childList:true, subtree:true});
+		target.classList.add('ista-observing');
+	}
 };
-setTimeout(ista_put_func, 0);
-window.addEventListener('load', ista_put_func);
-const target = document.querySelector("#index_box, #index_content, section.searchCardsArea, div.materialsContentsArea, div.tree-view, section.p-contentsTreeViewPage, section.p-treeParentsPage");
-if (target !== null) {
-	const observer = new MutationObserver(records => {
-		if (records[0].addedNodes.length > 0) setTimeout(ista_put_func, 0);
-	});
-	observer.observe(target, {childList:true, subtree:true});
-}
+setTimeout(addPlayerToCards, 0);
+window.addEventListener('load', addPlayerToCards);
+
 
 
 /* --- ポップアップからの操作 --- */
@@ -244,6 +246,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				tab_id      : request.tab_id,
 				autoplaying : false
 			});
+			if (ista_audio_obj.length < 1) addPlayerToCards();
 			return;
 		}
 		sendResponse({

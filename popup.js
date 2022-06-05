@@ -22,8 +22,8 @@ const icons = {
 	icon_stop         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMiAyaDIwdjIwaC0yMHoiLz48L3N2Zz4=',
 	icon_back         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNCAydjIwaC0ydi0yMGgyem0xOCAwbC0xNiAxMCAxNiAxMHYtMjB6Ii8+PC9zdmc+',
 	icon_next         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjAgMjJ2LTIwaDJ2MjBoLTJ6bS0xOCAwbDE2LTEwLTE2LTEwdjIweiIvPjwvc3ZnPg==',
-	icon_bookmark_off : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgLjU4N2wzLjY2OCA3LjU2OCA4LjMzMiAxLjE1MS02LjA2NCA1LjgyOCAxLjQ4IDguMjc5LTcuNDE2LTMuOTY3LTcuNDE3IDMuOTY3IDEuNDgxLTguMjc5LTYuMDY0LTUuODI4IDguMzMyLTEuMTUxeiIvPjwvc3ZnPg==',
-	icon_bookmark_on  : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgNS4xNzNsMi4zMzUgNC44MTcgNS4zMDUuNzMyLTMuODYxIDMuNzEuOTQyIDUuMjctNC43MjEtMi41MjQtNC43MjEgMi41MjUuOTQyLTUuMjctMy44NjEtMy43MSA1LjMwNS0uNzMzIDIuMzM1LTQuODE3em0wLTQuNTg2bC0zLjY2OCA3LjU2OC04LjMzMiAxLjE1MSA2LjA2NCA1LjgyOC0xLjQ4IDguMjc5IDcuNDE2LTMuOTY3IDcuNDE2IDMuOTY2LTEuNDgtOC4yNzkgNi4wNjQtNS44MjctOC4zMzItMS4xNS0zLjY2OC03LjU2OXoiLz48L3N2Zz4='
+	icon_bookmark_off : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgNS4xNzNsMi4zMzUgNC44MTcgNS4zMDUuNzMyLTMuODYxIDMuNzEuOTQyIDUuMjctNC43MjEtMi41MjQtNC43MjEgMi41MjUuOTQyLTUuMjctMy44NjEtMy43MSA1LjMwNS0uNzMzIDIuMzM1LTQuODE3em0wLTQuNTg2bC0zLjY2OCA3LjU2OC04LjMzMiAxLjE1MSA2LjA2NCA1LjgyOC0xLjQ4IDguMjc5IDcuNDE2LTMuOTY3IDcuNDE2IDMuOTY2LTEuNDgtOC4yNzkgNi4wNjQtNS44MjctOC4zMzItMS4xNS0zLjY2OC03LjU2OXoiLz48L3N2Zz4=',
+	icon_bookmark_on  : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgLjU4N2wzLjY2OCA3LjU2OCA4LjMzMiAxLjE1MS02LjA2NCA1LjgyOCAxLjQ4IDguMjc5LTcuNDE2LTMuOTY3LTcuNDE3IDMuOTY3IDEuNDgxLTguMjc5LTYuMDY0LTUuODI4IDguMzMyLTEuMTUxeiIvPjwvc3ZnPg=='
 };
 const icon_captions = {
 	icon_play         : '再生',
@@ -116,6 +116,7 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 		if (key === 'icon_next') img.addEventListener('click', nextAudio);
 		if (key === 'icon_back') img.addEventListener('click', backAudio);
 		if (key === 'icon_stop') img.addEventListener('click', stopAutoplay);
+		if (key === 'icon_bookmark_off') img.addEventListener('click', toggleBookmark);
 		if (key !== 'icon_pause' && !now_playing) {
 			img.src   = icons[key];
 			img.title = icon_captions[key];
@@ -220,6 +221,44 @@ const updateBookmarkButton = (tab_id, commons_id) => {
 		}
 	});
 }
+
+
+/* --- ブックマークの切り替え --- */
+const toggleBookmark = event => {
+	const icon = event.currentTarget;
+	if (icon.title === icon_captions['icon_bookmark_off']) {
+		addBookmark(event);
+		icon.src   = icons['icon_bookmark_on'];
+		icon.title = icon_captions['icon_bookmark_on'];
+	} else {
+		removeBookmark(event);
+		icon.src   = icons['icon_bookmark_off'];
+		icon.title = icon_captions['icon_bookmark_off'];
+	}
+};
+
+
+/* --- ブックマークの追加 --- */
+const addBookmark = event => {
+	const mini_player = event.currentTarget.parentNode;
+	const span        = mini_player.querySelector('span[commons_id]');
+	browser.runtime.sendMessage({
+		ctrl       : 'add-bookmark',
+		commons_id : span.getAttribute('commons_id'),
+		title      : span.innerText + ' - ニコニ・コモンズ'
+	});
+};
+
+
+/* --- ブックマークの削除 --- */
+const removeBookmark = event => {
+	const mini_player = event.currentTarget.parentNode;
+	const span        = mini_player.querySelector('span[commons_id]');
+	browser.runtime.sendMessage({
+		ctrl       : 'remove-bookmark',
+		commons_id : span.getAttribute('commons_id')
+	});
+};
 
 
 /* --- 音量バーからの反映 --- */

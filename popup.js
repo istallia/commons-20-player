@@ -17,18 +17,22 @@
 
 /* --- アイコンを定数として設定 --- */
 const icons = {
-	icon_play  : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMiAyNHYtMjRsMjAgMTItMjAgMTJ6Ii8+PC9zdmc+',
-	icon_pause : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTEgMjJoLTR2LTIwaDR2MjB6bTYtMjBoLTR2MjBoNHYtMjB6Ii8+PC9zdmc+',
-	icon_stop  : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMiAyaDIwdjIwaC0yMHoiLz48L3N2Zz4=',
-	icon_back  : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNCAydjIwaC0ydi0yMGgyem0xOCAwbC0xNiAxMCAxNiAxMHYtMjB6Ii8+PC9zdmc+',
-	icon_next  : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjAgMjJ2LTIwaDJ2MjBoLTJ6bS0xOCAwbDE2LTEwLTE2LTEwdjIweiIvPjwvc3ZnPg=='
+	icon_play         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMiAyNHYtMjRsMjAgMTItMjAgMTJ6Ii8+PC9zdmc+',
+	icon_pause        : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTEgMjJoLTR2LTIwaDR2MjB6bTYtMjBoLTR2MjBoNHYtMjB6Ii8+PC9zdmc+',
+	icon_stop         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMiAyaDIwdjIwaC0yMHoiLz48L3N2Zz4=',
+	icon_back         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNNCAydjIwaC0ydi0yMGgyem0xOCAwbC0xNiAxMCAxNiAxMHYtMjB6Ii8+PC9zdmc+',
+	icon_next         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjAgMjJ2LTIwaDJ2MjBoLTJ6bS0xOCAwbDE2LTEwLTE2LTEwdjIweiIvPjwvc3ZnPg==',
+	icon_bookmark_off : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgNS4xNzNsMi4zMzUgNC44MTcgNS4zMDUuNzMyLTMuODYxIDMuNzEuOTQyIDUuMjctNC43MjEtMi41MjQtNC43MjEgMi41MjUuOTQyLTUuMjctMy44NjEtMy43MSA1LjMwNS0uNzMzIDIuMzM1LTQuODE3em0wLTQuNTg2bC0zLjY2OCA3LjU2OC04LjMzMiAxLjE1MSA2LjA2NCA1LjgyOC0xLjQ4IDguMjc5IDcuNDE2LTMuOTY3IDcuNDE2IDMuOTY2LTEuNDgtOC4yNzkgNi4wNjQtNS44MjctOC4zMzItMS4xNS0zLjY2OC03LjU2OXoiLz48L3N2Zz4=',
+	icon_bookmark_on  : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgLjU4N2wzLjY2OCA3LjU2OCA4LjMzMiAxLjE1MS02LjA2NCA1LjgyOCAxLjQ4IDguMjc5LTcuNDE2LTMuOTY3LTcuNDE3IDMuOTY3IDEuNDgxLTguMjc5LTYuMDY0LTUuODI4IDguMzMyLTEuMTUxeiIvPjwvc3ZnPg=='
 };
 const icon_captions = {
-	icon_play  : '再生',
-	icon_pause : '一時停止',
-	icon_stop  : '連続再生を停止',
-	icon_back  : '前のサウンド',
-	icon_next  : '次のサウンド'
+	icon_play         : '再生',
+	icon_pause        : '一時停止',
+	icon_stop         : '連続再生を停止',
+	icon_back         : '前のサウンド',
+	icon_next         : '次のサウンド',
+	icon_bookmark_off : 'ブックマーク',
+	icon_bookmark_on  : 'ブックマークを取り消し'
 };
 
 /* --- 各種パラメータの読み込み＆初期設定 --- */
@@ -105,35 +109,40 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 	let func = span => browser.tabs.create({active:true, url:'https://commons.nicovideo.jp/material/'+span.getAttribute('commons_id')});
 	span_title.addEventListener('click', func.bind(this, span_title));
 	mini_player.appendChild(span_title);
-	const icon_elements = Object.keys(icons).map(str => {
+	const icon_elements = Object.keys(icons).map(key => {
+		if (key === 'icon_bookmark_on') return;
 		const img = document.createElement('img');
-		if (str === 'icon_play' || str === 'icon_pause') img.addEventListener('click', playAndPause);
-		if (str === 'icon_next') img.addEventListener('click', nextAudio);
-		if (str === 'icon_back') img.addEventListener('click', backAudio);
-		if (str === 'icon_stop') img.addEventListener('click', stopAutoplay);
-		if (str !== 'icon_pause' && !now_playing) {
-			img.src   = icons[str];
-			img.title = icon_captions[str];
+		if (key === 'icon_play' || key === 'icon_pause') img.addEventListener('click', playAndPause);
+		if (key === 'icon_next') img.addEventListener('click', nextAudio);
+		if (key === 'icon_back') img.addEventListener('click', backAudio);
+		if (key === 'icon_stop') img.addEventListener('click', stopAutoplay);
+		if (key === 'icon_bookmark_off') img.addEventListener('click', toggleBookmark);
+		if (key !== 'icon_pause' && !now_playing) {
+			img.src   = icons[key];
+			img.title = icon_captions[key];
 			mini_player.appendChild(img);
-		} else if (str !== 'icon_play' && now_playing) {
-			img.src   = icons[str];
-			img.title = icon_captions[str];
+		} else if (key !== 'icon_play' && now_playing) {
+			img.src   = icons[key];
+			img.title = icon_captions[key];
 			mini_player.appendChild(img);
 		}
 	});
 	main.appendChild(mini_player);
+	updateBookmarkButton(tab_id, commons_id);
 	func = id => {
 		browser.tabs.sendMessage(id, {ctrl:'get-autoplay-status', tab_id:id}, response => {
 			const mini_player = document.getElementById('player-tab-' + String(response.tab_id));
 			if (mini_player) {
-				const span     = mini_player.querySelector('span.mini-player-title');
+				const span = mini_player.querySelector('span.mini-player-title');
+				if (response.title === span.innerText) return;
 				const img      = mini_player.querySelector('img[title="'+icon_captions['icon_play']+'"], img[title="'+icon_captions['icon_pause']+'"]');
 				span.innerText = response.title;
 				span.setAttribute('commons_id', response.commons_id);
-				icon_type      = 'icon_play';
+				icon_type = 'icon_play';
 				if (response.now_playing) icon_type = 'icon_pause';
 				img.src   = icons[icon_type];
 				img.title = icon_captions[icon_type];
+				updateBookmarkButton(id, response.commons_id);
 			}
 		});
 	};
@@ -168,6 +177,7 @@ const nextAudio = event => {
 		const span     = img.parentNode.querySelector('span.mini-player-title');
 		span.innerText = response.title;
 		span.setAttribute('commons_id', response.commons_id);
+		updateBookmarkButton(tab_id, response.commons_id);
 	});
 };
 const backAudio = event => {
@@ -177,6 +187,7 @@ const backAudio = event => {
 		const span     = img.parentNode.querySelector('span.mini-player-title');
 		span.innerText = response.title;
 		span.setAttribute('commons_id', response.commons_id);
+		updateBookmarkButton(tab_id, response.commons_id);
 	});
 };
 
@@ -188,6 +199,64 @@ const stopAutoplay = event => {
 	browser.tabs.sendMessage(tab_id, {ctrl:'stop-autoplay'}, response => {
 		clearInterval(Number(img.parentNode.getAttribute('interval_id')));
 		img.parentNode.remove();
+	});
+};
+
+
+/* --- ブックマークの確認 --- */
+const updateBookmarkButton = (tab_id, commons_id) => {
+	const mini_player     = document.getElementById('player-tab-' + String(tab_id));
+	const bookmark_button = mini_player.querySelector('img[title="'+icon_captions['icon_bookmark_off']+'"], img[title="'+icon_captions['icon_bookmark_on']+'"]');
+	browser.runtime.sendMessage({
+		ctrl : 'check-bookmarks',
+		id   : commons_id
+	}, check_result => {
+		console.log(`[${commons_id}] ${check_result.registered}`);
+		if (check_result.registered) {
+			bookmark_button.src   = icons['icon_bookmark_on'];
+			bookmark_button.title = icon_captions['icon_bookmark_on'];
+		} else {
+			bookmark_button.src   = icons['icon_bookmark_off'];
+			bookmark_button.title = icon_captions['icon_bookmark_off'];
+		}
+	});
+}
+
+
+/* --- ブックマークの切り替え --- */
+const toggleBookmark = event => {
+	const icon = event.currentTarget;
+	if (icon.title === icon_captions['icon_bookmark_off']) {
+		addBookmark(event);
+		icon.src   = icons['icon_bookmark_on'];
+		icon.title = icon_captions['icon_bookmark_on'];
+	} else {
+		removeBookmark(event);
+		icon.src   = icons['icon_bookmark_off'];
+		icon.title = icon_captions['icon_bookmark_off'];
+	}
+};
+
+
+/* --- ブックマークの追加 --- */
+const addBookmark = event => {
+	const mini_player = event.currentTarget.parentNode;
+	const span        = mini_player.querySelector('span[commons_id]');
+	browser.runtime.sendMessage({
+		ctrl       : 'add-bookmark',
+		commons_id : span.getAttribute('commons_id'),
+		title      : span.innerText + ' - ニコニ・コモンズ'
+	});
+};
+
+
+/* --- ブックマークの削除 --- */
+const removeBookmark = event => {
+	const mini_player = event.currentTarget.parentNode;
+	const span        = mini_player.querySelector('span[commons_id]');
+	browser.runtime.sendMessage({
+		ctrl       : 'remove-bookmark',
+		commons_id : span.getAttribute('commons_id')
 	});
 };
 

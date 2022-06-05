@@ -42,5 +42,49 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	} else if (request.ctrl === 'update-title') {
 		browser.runtime.sendMessage(request);
 		return;
+	} else if (request.ctrl === 'check-bookmarks') {
+		browser.bookmarks.search('https://commons.nicovideo.jp/material/nc', nodes => {
+			sendResponse({registered:nodes.some(node => node.url.indexOf(request.id) > -1)});
+		});
+		return true;
+	} else if (request.ctrl === 'add-bookmark') {
+		addBookmark(request);
+		return;
+	} else if (request.ctrl === 'remove-bookmark') {
+		removeBookmark(request);
+		return;
 	}
 });
+
+
+/* --- ブックマーク登録 --- */
+const addBookmark = request => {
+	browser.storage.sync.get('bookmarks_folder_id', data => {
+		if (!data['bookmarks_folder_id']) {
+			browser.bookmarks.create({title:'コモンズ20プレイヤー', index:0}, node => {
+				browser.storage.sync.set({bookmarks_folder_id:node.id}, set_res => addBookmark(request));
+			});
+		} else {
+			browser.bookmarks.get(data['bookmarks_folder_id'], folder_node => {
+				if (!folder_node || folder_node.length < 1) {
+					browser.bookmarks.create({title:'コモンズ20プレイヤー', index:0}, node => {
+						browser.storage.sync.set({bookmarks_folder_id:node.id}, set_res => addBookmark(request));
+					});
+					return;
+				}
+				folder_node = folder_node[0];
+				browser.bookmarks.create({parentId:folder_node.id, title:request.title, url:`https://commons.nicovideo.jp/material/${request.commons_id}`});
+			});
+		}
+	});
+};
+
+
+/* --- ブックマーク削除 --- */
+const removeBookmark = request => {
+	browser.bookmarks.search(`https://commons.nicovideo.jp/material/${request.commons_id}`, nodes => {
+		if (nodes.length < 1) return;
+		const node = nodes[0];
+		browser.bookmarks.remove(node.id);
+	});
+};

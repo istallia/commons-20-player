@@ -22,18 +22,21 @@ if (typeof browser === 'undefined') browser = chrome;
 /* --- 音量の取得など --- */
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.ctrl === 'get-volume') {
-		browser.storage.local.get(['ista_volume_master', 'ista_volume_bgm', 'ista_volume_se'], data => {
+		browser.storage.local.get(['volume_master', 'volume_bgm', 'volume_se'], data => {
 			if (!data['ista_volume_bgm'] && localStorage.getItem('ista_volume_bgm')) {
 				browser.storage.local.set({
 					volume_master : Number(localStorage.getItem('ista_volume_master')),
 					volume_bgm    : Number(localStorage.getItem('ista_volume_bgm')),
 					volume_se     : Number(localStorage.getItem('ista_volume_se'))
 				});
+				localStorage.removeItem('ista_volume_master');
+				localStorage.removeItem('ista_volume_bgm');
+				localStorage.removeItem('ista_volume_se');
 			}
 			sendResponse({
-				volume_master : Number(data['ista_volume_master'] || localStorage.getItem('ista_volume_master') || '100'),
-				volume_bgm    : Number(data['ista_volume_bgm']    || localStorage.getItem('ista_volume_bgm')    || '100'),
-				volume_se     : Number(data['ista_volume_se']     || localStorage.getItem('ista_volume_se')     || '100')
+				volume_master : Number(data['volume_master'] || localStorage.getItem('ista_volume_master') || '100'),
+				volume_bgm    : Number(data['volume_bgm']    || localStorage.getItem('ista_volume_bgm')    || '100'),
+				volume_se     : Number(data['volume_se']     || localStorage.getItem('ista_volume_se')     || '100')
 			});
 		});
 		return true;

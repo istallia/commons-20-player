@@ -143,7 +143,7 @@ const appendPlayer = parent => {
 	parent.appendChild(div_link);
 	parent.classList.add('ista_cmn_player_parent');
 	ista_audio_link.push(a_link);
-	console.log(div_link);
+	// console.log(div_link);
 };
 
 
@@ -160,7 +160,7 @@ const addPlayerToCards = () => {
 		'ul.childrenContentsCardList > li.childrenItem' // 小作品
 	];
 	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a img[src]').join(', '))];
-	console.log(ista_divs);
+	// console.log(ista_divs);
 	for (let i in ista_divs) {
 		if (ista_divs[i].parentNode.parentNode.tagName.toLowerCase() === 'a') {
 			appendPlayer(ista_divs[i].parentNode.parentNode.parentNode);

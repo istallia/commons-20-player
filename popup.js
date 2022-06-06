@@ -211,7 +211,6 @@ const updateBookmarkButton = (tab_id, commons_id) => {
 		ctrl : 'check-bookmarks',
 		id   : commons_id
 	}, check_result => {
-		console.log(`[${commons_id}] ${check_result.registered}`);
 		if (check_result.registered) {
 			bookmark_button.src   = icons['icon_bookmark_on'];
 			bookmark_button.title = icon_captions['icon_bookmark_on'];

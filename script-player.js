@@ -177,6 +177,8 @@ const addPlayerToCards = () => {
 		});
 		observer.observe(target, {childList:true, subtree:true});
 		target.classList.add('ista-observing');
+	} else {
+		setTimeout(addPlayerToCards, 500);
 	}
 };
 setTimeout(addPlayerToCards, 0);

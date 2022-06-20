@@ -92,6 +92,11 @@ const playAudio = (num, event) => {
 const appendPlayer = parent => {
 	/* プレイヤー追加済みdivを除外 */
 	if (parent.classList.contains('ista_cmn_player_parent')) return;
+	/* タイトル要素を取得 */
+	let alt_parent = parent;
+	if (alt_parent.tagName.toLowerCase() !== 'li') alt_parent = alt_parent.parentNode;
+	const title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a, a.title_link[href], div.thumbnailBoxListTitle > a, div.contentArea > a');
+	if (!title_element) return;
 	/* 素材種別を判定 */
 	let thumb_el = parent.querySelector('a img[src]')
 	if (thumb_el === null) return;
@@ -128,9 +133,6 @@ const appendPlayer = parent => {
 	ista_audio_obj.push(audio_obj);
 	ista_audio_type.push(thumb_url);
 	ista_audio_nc_id.push('nc'+thumb_id);
-	let alt_parent = parent;
-	if (alt_parent.tagName.toLowerCase() !== 'li') alt_parent = alt_parent.parentNode;
-	let title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a, a.title_link[href], div.contentArea > a');
 	ista_audio_title.push(title_element.innerText);
 	/* テキストリンクをdivに入れて追加 */
 	let div_link = document.createElement('div');
@@ -149,17 +151,17 @@ const appendPlayer = parent => {
 
 /* --- 読み込み時の処理 --- */
 const addPlayerToCards = () => {
-	const ista_thumb_list = [
-		'li.searchItemCardArea',                        // 検索
-		'tr[id^="material_"] > td.log_border',          // ユーザー投稿素材一覧
-		'div.thumb_list_thumb',                         // ユーザーページ
-		'li.materialsItemCardArea',                     // ランキング(トップページ)
-		'div.materialsItemCardArea',                    // 新着作品(トップページ)
-		'#index_box td.log_border',                     // ランキング
-		'div.parentsCardArea',                          // コンテンツツリー
-		'ul.childrenContentsCardList > li.childrenItem' // 小作品
+	const img_list = [
+		'a[href*="/material/nc"] img[src$="audio00.png"]',
+		'a[href*="/material/nc"] img[src$="audio01.png"]',
+		'a[href*="/material/nc"] img[src$="audio02.png"]',
+		'a[href*="/material/nc"] img[src$="audio03.png"]',
+		'a[href*="/tree/nc"] img[src$="audio00.png"]',
+		'a[href*="/tree/nc"] img[src$="audio01.png"]',
+		'a[href*="/tree/nc"] img[src$="audio02.png"]',
+		'a[href*="/tree/nc"] img[src$="audio03.png"]'
 	];
-	let ista_divs = [... document.querySelectorAll(ista_thumb_list.map(selector => selector+' > a img[src]').join(', '))];
+	let ista_divs = [... document.querySelectorAll(img_list.join(','))];
 	// console.log(ista_divs);
 	for (let i in ista_divs) {
 		if (ista_divs[i].parentNode.parentNode.tagName.toLowerCase() === 'a') {

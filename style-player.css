@@ -33,8 +33,10 @@ div.thumb_list_thumb div.ista_cmn_player {
 	left : 0.7rem;
 }
 #index_box td.log_border div.ista_cmn_player {
-	top  : calc((100% - 80px) / 2);
-	left : 0.9rem;
+	margin-top : -2px;
+	padding    : 0px 2px;
+	top        : calc((100% - 80px) / 2);
+	left       : 0.9rem;
 }
 li.item2 > div.thum > div.ista_cmn_player {
 	padding : 0.3rem;

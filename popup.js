@@ -127,6 +127,15 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 			mini_player.appendChild(img);
 		}
 	});
+	const br_bgm_only       = document.createElement('br');
+	const checkbox_bgm_only = document.createElement('input');
+	const label_bgm_only    = document.createElement('label');
+	const caption_bgm_only  = document.createTextNode('BGMのみを連続再生する');
+	checkbox_bgm_only.type  = 'checkbox';
+	label_bgm_only.appendChild(checkbox_bgm_only);
+	label_bgm_only.appendChild(caption_bgm_only);
+	mini_player.appendChild(br_bgm_only);
+	mini_player.appendChild(label_bgm_only);
 	main.appendChild(mini_player);
 	updateBookmarkButton(tab_id, commons_id);
 	func = id => {

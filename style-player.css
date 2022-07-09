@@ -53,7 +53,12 @@ li[data-commons-kind="tree-item-card"] > div.parentsCardArea div.ista_cmn_player
 ul.childrenContentsCardList > li.childrenItem div.ista_cmn_player {
 	top : 1rem;
 }
-div.ista_cmn_player > a {
+.ista_cmn_player_parent > div.ista_cmn_player > a {
 	background       : none !important;
 	background-color : white !important;
+	color            : #111;
+}
+.ista_cmn_player_parent > div.ista_cmn_player > a.nowplaying {
+	background-color : #9fcfff !important;
+	font-weight      : bold !important;
 }

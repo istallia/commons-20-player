@@ -73,15 +73,18 @@ const playAudio = (num, event) => {
 			ista_audio_obj[ista_last_play_index].currentTime = 0;
 			if (num === ista_last_play_index && ista_audio_link[num].innerText === '再生中') {
 				ista_audio_link[ista_last_play_index].innerText = '試聴';
-				ista_nowplaying                                 = false;
+				ista_audio_link[ista_last_play_index].classList.remove('nowplaying');
+				ista_nowplaying = false;
 				return;
 			}
 			ista_audio_link[ista_last_play_index].innerText = '試聴';
+			ista_audio_link[ista_last_play_index].classList.remove('nowplaying');
 		}
 		/* Audioオブジェクトを用意して再生 */
 		if (ista_audio_obj[num] === null) return;
 		ista_audio_obj[num].volume     = ista_volume / 100;
 		ista_audio_link[num].innerText = '通信中';
+		ista_audio_link[num].classList.add('nowplaying');
 		ista_audio_obj[num].play().then(() => {
 			ista_audio_link[num].innerText = '再生中';
 			ista_nowplaying                = true;
@@ -93,8 +96,9 @@ const playAudio = (num, event) => {
 			});
 		}, () => {
 			ista_audio_link[num].innerText = '試聴不可';
-			ista_audio_obj[num]            = null;
-			ista_nowplaying                = false;
+			ista_audio_link[num].classList.remove('nowplaying');
+			ista_audio_obj[num] = null;
+			ista_nowplaying     = false;
 			if (ista_autoplaying && num < ista_audio_obj.length - 1) playAudio(num+1, null);
 		});
 		ista_last_play_index = num;
@@ -130,6 +134,7 @@ const appendPlayer = parent => {
 	audio_obj.src     = 'https://commons.nicovideo.jp/api/preview/get?cid=' + thumb_id;
 	let ended_func = (n, event) => {
 		ista_audio_link[n].innerText = '試聴';
+		ista_audio_link[n].classList.remove('nowplaying');
 		if (ista_autoplaying && n < ista_audio_obj.length - 1) {
 			playAudio(n+1, null);
 			return;
@@ -252,6 +257,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	/* 連続再生の停止 */
 	if (request.ctrl === 'stop-autoplay') {
 		ista_audio_link[ista_last_play_index].innerText = '試聴';
+		ista_audio_link[ista_last_play_index].classList.remove('nowplaying');
 		ista_audio_obj[ista_last_play_index].pause();
 		ista_audio_obj[ista_last_play_index].currentTime = 0;
 		ista_nowplaying  = false;
@@ -292,9 +298,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	}
 	if (request.ctrl === 'pause-audio' && ista_nowplaying) {
 		ista_audio_link[ista_last_play_index].innerText = '試聴';
+		ista_audio_link[ista_last_play_index].classList.remove('nowplaying');
 		ista_audio_obj[ista_last_play_index].pause();
 		ista_audio_obj[ista_last_play_index].currentTime = 0;
-		ista_nowplaying                                  = false;
+		ista_nowplaying = false;
 		sendResponse({});
 		return;
 	}

@@ -22,7 +22,7 @@ if (typeof browser === 'undefined') browser = chrome;
 /* --- 音量の取得など --- */
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.ctrl === 'get-preferences') {
-		browser.storage.local.get(['volume_master', 'volume_bgm', 'volume_se'], data => {
+		browser.storage.local.get(['volume_master', 'volume_bgm', 'volume_se', 'bgm_filter_status'], data => {
 			if (!data['ista_volume_bgm'] && localStorage.getItem('ista_volume_bgm')) {
 				browser.storage.local.set({
 					volume_master : Number(localStorage.getItem('ista_volume_master')),
@@ -34,9 +34,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				localStorage.removeItem('ista_volume_se');
 			}
 			sendResponse({
-				volume_master : Number(data['volume_master'] || localStorage.getItem('ista_volume_master') || '100'),
-				volume_bgm    : Number(data['volume_bgm']    || localStorage.getItem('ista_volume_bgm')    || '100'),
-				volume_se     : Number(data['volume_se']     || localStorage.getItem('ista_volume_se')     || '100')
+				volume_master     : Number(data['volume_master'] || localStorage.getItem('ista_volume_master') || '100'),
+				volume_bgm        : Number(data['volume_bgm']    || localStorage.getItem('ista_volume_bgm')    || '100'),
+				volume_se         : Number(data['volume_se']     || localStorage.getItem('ista_volume_se')     || '100'),
+				bgm_filter_status : data['bgm_filter_status'] !== null ? data['bgm_filter_status'] : false
 			});
 		});
 		return true;
@@ -56,7 +57,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			status : request.status
 		});
 		browser.storage.local.set({bgm_filter_status:request.status});
-		console.log(`BGMフィルタ切り替え: ${request.status}`);
 		return;
 	} else if (request.ctrl === 'check-bookmarks') {
 		browser.bookmarks.search('https://commons.nicovideo.jp/material/nc', nodes => {

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 /* --- アイコンを定数として設定 --- */
 const icons = {
 	icon_play         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMiAyNHYtMjRsMjAgMTItMjAgMTJ6Ii8+PC9zdmc+',
@@ -35,6 +36,7 @@ const icon_captions = {
 	icon_bookmark_on  : 'ブックマークを取り消し'
 };
 
+
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		sessionStorage.setItem('ista_volume_master', params['volume_master']);
 		sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
 		sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
+		sessionStorage.setItem('bgm_filter_status' , params['bgm_filter_status']);
 		ista_volume_master = Number(sessionStorage.getItem('ista_volume_master') || '100');
 		ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
 		ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || '100');
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				browser.tabs.sendMessage(tab.id, {ctrl:'start-autoplay', tab_id:tab.id}, response => {
 					if (response.is_playable) {
 						/* ミニプレイヤーを配置 */
-						addMiniPlayer(response.tab_id, response.title, response.commons_id);
+						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.bgm_filter_status);
 					}
 				});
 			});
@@ -79,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				browser.tabs.sendMessage(tab_id, {ctrl:'get-autoplay-status', tab_id:tab_id}, response => {
 					if (!response) return;
 					if (response.autoplaying) {
-						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.bgm_filter, response.now_playing);
+						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.bgm_filter_status, response.now_playing);
 					}
 				});
 			}

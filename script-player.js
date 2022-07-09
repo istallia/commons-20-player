@@ -24,6 +24,7 @@ browser.runtime.sendMessage({ctrl : 'get-preferences'}, params => {
 	ista_volume_master = Number(sessionStorage.getItem('ista_volume_master') || '100');
 	ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
 	ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || '100');
+	ista_bgm_filter    = params['bgm_filter_status'];
 });
 let ista_volume_master   = Number(sessionStorage.getItem('ista_volume_master') || '100');
 let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
@@ -227,22 +228,23 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			return;
 		}
 		ista_autoplaying = true;
-		ista_bgm_filter  = false;
 		/* 再生を開始する */
 		if (!ista_nowplaying) {
 			playAudio(0, null);
 			sendResponse({
-				is_playable : true,
-				tab_id      : request.tab_id,
-				title       : ista_audio_title[0],
-				commons_id  : ista_audio_nc_id[0]
+				is_playable       : true,
+				tab_id            : request.tab_id,
+				title             : ista_audio_title[0],
+				commons_id        : ista_audio_nc_id[0],
+				bgm_filter_status : ista_bgm_filter
 			});
 		} else {
 			sendResponse({
-				is_playable : true,
-				tab_id      : request.tab_id,
-				title       : ista_audio_title[ista_last_play_index],
-				commons_id  : ista_audio_nc_id[ista_last_play_index]
+				is_playable       : true,
+				tab_id            : request.tab_id,
+				title             : ista_audio_title[ista_last_play_index],
+				commons_id        : ista_audio_nc_id[ista_last_play_index],
+				bgm_filter_status : ista_bgm_filter
 			});
 		}
 		return;
@@ -273,12 +275,12 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			return;
 		}
 		sendResponse({
-			tab_id      : request.tab_id,
-			autoplaying : true,
-			commons_id  : ista_audio_nc_id[ista_last_play_index],
-			title       : ista_audio_title[ista_last_play_index],
-			now_playing : ista_nowplaying,
-			bgm_filter  : ista_bgm_filter
+			tab_id            : request.tab_id,
+			autoplaying       : true,
+			commons_id        : ista_audio_nc_id[ista_last_play_index],
+			title             : ista_audio_title[ista_last_play_index],
+			now_playing       : ista_nowplaying,
+			bgm_filter_status : ista_bgm_filter
 		});
 		return;
 	}

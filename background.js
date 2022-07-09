@@ -21,7 +21,7 @@ if (typeof browser === 'undefined') browser = chrome;
 
 /* --- 音量の取得など --- */
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.ctrl === 'get-volume') {
+	if (request.ctrl === 'get-preferences') {
 		browser.storage.local.get(['volume_master', 'volume_bgm', 'volume_se'], data => {
 			if (!data['ista_volume_bgm'] && localStorage.getItem('ista_volume_bgm')) {
 				browser.storage.local.set({
@@ -49,6 +49,14 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		return;
 	} else if (request.ctrl === 'update-title') {
 		browser.runtime.sendMessage(request);
+		return;
+	} else if (request.ctrl === 'change-bgm-filter') {
+		browser.tabs.sendMessage(request.tab_id, {
+			ctrl   : 'change-bgm-filter',
+			status : request.status
+		});
+		browser.storage.local.set({bgm_filter_status:request.status});
+		console.log(`BGMフィルタ切り替え: ${request.status}`);
 		return;
 	} else if (request.ctrl === 'check-bookmarks') {
 		browser.bookmarks.search('https://commons.nicovideo.jp/material/nc', nodes => {

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 /* --- アイコンを定数として設定 --- */
 const icons = {
 	icon_play         : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMiAyNHYtMjRsMjAgMTItMjAgMTJ6Ii8+PC9zdmc+',
@@ -35,14 +36,16 @@ const icon_captions = {
 	icon_bookmark_on  : 'ブックマークを取り消し'
 };
 
+
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
 document.addEventListener('DOMContentLoaded', () => {
-	browser.runtime.sendMessage({ctrl:'get-volume'}, params => {
+	browser.runtime.sendMessage({ctrl:'get-preferences'}, params => {
 		/* 音量の読み出し */
 		sessionStorage.setItem('ista_volume_master', params['volume_master']);
 		sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
 		sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
+		sessionStorage.setItem('bgm_filter_status' , params['bgm_filter_status']);
 		ista_volume_master = Number(sessionStorage.getItem('ista_volume_master') || '100');
 		ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
 		ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || '100');
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				browser.tabs.sendMessage(tab.id, {ctrl:'start-autoplay', tab_id:tab.id}, response => {
 					if (response.is_playable) {
 						/* ミニプレイヤーを配置 */
-						addMiniPlayer(response.tab_id, response.title, response.commons_id);
+						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.bgm_filter_status);
 					}
 				});
 			});
@@ -79,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				browser.tabs.sendMessage(tab_id, {ctrl:'get-autoplay-status', tab_id:tab_id}, response => {
 					if (!response) return;
 					if (response.autoplaying) {
-						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.now_playing);
+						addMiniPlayer(response.tab_id, response.title, response.commons_id, response.bgm_filter_status, response.now_playing);
 					}
 				});
 			}
@@ -96,7 +99,7 @@ let ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || 
 
 
 /* --- ミニプレイヤーの追加(関数化) --- */
-const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
+const addMiniPlayer = (tab_id, title, commons_id, bgm_filter = false, now_playing = true) => {
 	const main        = document.getElementById('mini-player');
 	const mini_player = document.createElement('div');
 	mini_player.id    = 'player-tab-' + String(tab_id);
@@ -110,6 +113,7 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 	span_title.addEventListener('click', func.bind(this, span_title));
 	mini_player.appendChild(span_title);
 	const icon_elements = Object.keys(icons).map(key => {
+		/* アイコンボタン群を追加 */
 		if (key === 'icon_bookmark_on') return;
 		const img = document.createElement('img');
 		if (key === 'icon_play' || key === 'icon_pause') img.addEventListener('click', playAndPause);
@@ -127,9 +131,25 @@ const addMiniPlayer = (tab_id, title, commons_id, now_playing = true) => {
 			mini_player.appendChild(img);
 		}
 	});
+	const br_bgm_only       = document.createElement('br');
+	const checkbox_bgm_only = document.createElement('input');
+	const label_bgm_only    = document.createElement('label');
+	const caption_bgm_only  = document.createTextNode('BGMのみを連続再生する');
+	checkbox_bgm_only.type  = 'checkbox';
+	checkbox_bgm_only.addEventListener('change', event => {
+		/* BGMフィルタを有効化/無効化 */
+		const tab_id = Number(event.currentTarget.closest('.mini-player').getAttribute('tab_id'));
+		browser.runtime.sendMessage({ctrl:'change-bgm-filter',tab_id:tab_id,status:event.currentTarget.checked});
+	});
+	if (bgm_filter) checkbox_bgm_only.setAttribute('checked', 'true');
+	label_bgm_only.appendChild(checkbox_bgm_only);
+	label_bgm_only.appendChild(caption_bgm_only);
+	mini_player.appendChild(br_bgm_only);
+	mini_player.appendChild(label_bgm_only);
 	main.appendChild(mini_player);
 	updateBookmarkButton(tab_id, commons_id);
 	func = id => {
+		/* タブとの通信を連打して再生中のタイトルを更新 */
 		browser.tabs.sendMessage(id, {ctrl:'get-autoplay-status', tab_id:id}, response => {
 			const mini_player = document.getElementById('player-tab-' + String(response.tab_id));
 			if (mini_player) {

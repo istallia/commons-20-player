@@ -17,13 +17,14 @@
 
 /* --- 各種パラメータの読み込み＆初期設定 --- */
 if (typeof browser === 'undefined') browser = chrome;
-browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
+browser.runtime.sendMessage({ctrl : 'get-preferences'}, params => {
 	sessionStorage.setItem('ista_volume_master', params['volume_master']);
 	sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
 	sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
 	ista_volume_master = Number(sessionStorage.getItem('ista_volume_master') || '100');
 	ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
 	ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se')     || '100');
+	ista_bgm_filter    = params['bgm_filter_status'];
 });
 let ista_volume_master   = Number(sessionStorage.getItem('ista_volume_master') || '100');
 let ista_volume_bgm      = Number(sessionStorage.getItem('ista_volume_bgm')    || '100');
@@ -36,20 +37,32 @@ let ista_audio_nc_id     = [];
 let ista_last_play_index = null;
 let ista_autoplaying     = false;
 let ista_nowplaying      = false;
+let ista_bgm_filter      = false;
 
 
 /* --- 指定番号の音声を再生する関数 --- */
 const playAudio = (num, event) => {
+	/* BGMフィルタが有効ならBGM以外は通さない */
+	if (ista_audio_type[num] !== 'audio01' && ista_autoplaying && ista_bgm_filter) {
+		if (event?.button_ctrl === 'back') {
+			playAudio(num-1, {button_ctrl:event.button_ctrl});
+		} else {
+			playAudio(num+1, {
+				button_ctrl : event?.button_ctrl || null
+			});
+		}
+		return;
+	}
+	/* インデックスを検証 */
+	if (num >= ista_audio_obj.length && num < 0) return;
 	/* 音量の確認処理を挟む */
-	browser.runtime.sendMessage({ctrl : 'get-volume'}, params => {
+	browser.runtime.sendMessage({ctrl : 'get-preferences'}, params => {
 		sessionStorage.setItem('ista_volume_master', params['volume_master']);
 		sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
 		sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
     ista_volume_master = Number(sessionStorage.getItem('ista_volume_master'));
     ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm'));
     ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se'));
-		/* インデックスを検証 */
-		if (num >= ista_audio_obj.length) return;
 		/* 素材種別に合わせて音量を設定 */
 		let ista_volume = ista_volume_se;
 		if (ista_audio_type[num] === 'audio01') ista_volume = ista_volume_bgm;
@@ -67,7 +80,8 @@ const playAudio = (num, event) => {
 		}
 		/* Audioオブジェクトを用意して再生 */
 		if (ista_audio_obj[num] === null) return;
-		ista_audio_obj[num].volume = ista_volume / 100;
+		ista_audio_obj[num].volume     = ista_volume / 100;
+		ista_audio_link[num].innerText = '通信中';
 		ista_audio_obj[num].play().then(() => {
 			ista_audio_link[num].innerText = '再生中';
 			ista_nowplaying                = true;
@@ -218,17 +232,19 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		if (!ista_nowplaying) {
 			playAudio(0, null);
 			sendResponse({
-				is_playable : true,
-				tab_id      : request.tab_id,
-				title       : ista_audio_title[0],
-				commons_id  : ista_audio_nc_id[0]
+				is_playable       : true,
+				tab_id            : request.tab_id,
+				title             : ista_audio_title[0],
+				commons_id        : ista_audio_nc_id[0],
+				bgm_filter_status : ista_bgm_filter
 			});
 		} else {
 			sendResponse({
-				is_playable : true,
-				tab_id      : request.tab_id,
-				title       : ista_audio_title[ista_last_play_index],
-				commons_id  : ista_audio_nc_id[ista_last_play_index]
+				is_playable       : true,
+				tab_id            : request.tab_id,
+				title             : ista_audio_title[ista_last_play_index],
+				commons_id        : ista_audio_nc_id[ista_last_play_index],
+				bgm_filter_status : ista_bgm_filter
 			});
 		}
 		return;
@@ -238,9 +254,14 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		ista_audio_link[ista_last_play_index].innerText = '試聴';
 		ista_audio_obj[ista_last_play_index].pause();
 		ista_audio_obj[ista_last_play_index].currentTime = 0;
-		ista_nowplaying                                  = false;
-		ista_autoplaying                                 = false;
+		ista_nowplaying  = false;
+		ista_autoplaying = false;
 		sendResponse({});
+		return;
+	}
+	/* BGMフィルタのOn/Off */
+	if (request.ctrl === 'change-bgm-filter') {
+		ista_bgm_filter = request.status;
 		return;
 	}
 	/* 連続再生ステータスの返信 */
@@ -254,11 +275,12 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			return;
 		}
 		sendResponse({
-			tab_id      : request.tab_id,
-			autoplaying : true,
-			commons_id  : ista_audio_nc_id[ista_last_play_index],
-			title       : ista_audio_title[ista_last_play_index],
-			now_playing : ista_nowplaying
+			tab_id            : request.tab_id,
+			autoplaying       : true,
+			commons_id        : ista_audio_nc_id[ista_last_play_index],
+			title             : ista_audio_title[ista_last_play_index],
+			now_playing       : ista_nowplaying,
+			bgm_filter_status : ista_bgm_filter
 		});
 		return;
 	}
@@ -279,7 +301,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	/* 次の/前のサウンド */
 	if (request.ctrl === 'next-audio') {
 		const new_play_index = (ista_last_play_index + 1) % ista_audio_obj.length;
-		if (ista_nowplaying) playAudio(new_play_index, null);
+		if (ista_nowplaying) playAudio(new_play_index, {button_ctrl:'next'});
 		sendResponse({
 			title      : ista_audio_title[new_play_index],
 			commons_id : ista_audio_nc_id[new_play_index]
@@ -287,7 +309,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	}
 	if (request.ctrl === 'back-audio') {
 		const new_play_index = Math.max(ista_last_play_index-1, 0);
-		if (ista_nowplaying) playAudio(new_play_index, null);
+		if (ista_nowplaying) playAudio(new_play_index, {button_ctrl:'back'});
 		sendResponse({
 			title      : ista_audio_title[new_play_index],
 			commons_id : ista_audio_nc_id[new_play_index]

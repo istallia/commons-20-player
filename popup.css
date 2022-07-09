@@ -44,4 +44,7 @@ div.mini-player img {
 	padding : 5px;
 	cursor  : pointer;
 }
+div.mini-player label {
+	user-select : none;
+}
 label[for^="ista-"] { user-select : none; }

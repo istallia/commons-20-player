@@ -171,10 +171,10 @@ const appendPlayer = parent => {
 /* --- 読み込み時の処理 --- */
 const addPlayerToCards = () => {
 	const img_list = [
-		'a[href*="/material/nc"] img[src$="audio00.png"]',
-		'a[href*="/material/nc"] img[src$="audio01.png"]',
-		'a[href*="/material/nc"] img[src$="audio02.png"]',
-		'a[href*="/material/nc"] img[src$="audio03.png"]',
+		'a[href*="/works/nc"] img[src$="audio00.png"]',
+		'a[href*="/works/nc"] img[src$="audio01.png"]',
+		'a[href*="/works/nc"] img[src$="audio02.png"]',
+		'a[href*="/works/nc"] img[src$="audio03.png"]',
 		'a[href*="/tree/nc"] img[src$="audio00.png"]',
 		'a[href*="/tree/nc"] img[src$="audio01.png"]',
 		'a[href*="/tree/nc"] img[src$="audio02.png"]',

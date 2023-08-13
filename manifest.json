@@ -17,7 +17,7 @@
 			"run_at"  : "document_end"
 		},
 		{
-			"matches" : ["*://commons.nicovideo.jp/material/*"],
+			"matches" : ["*://commons.nicovideo.jp/works/*"],
 			"js"      : ["script-material.js"]
 		}
 	],
@@ -32,10 +32,8 @@
 		"default_popup" : "popup.html"
 	},
 	"permissions" : [
-		"http://commons.nicovideo.jp/search/*",
-		"https://commons.nicovideo.jp/search/*",
-		"http://commons.nicovideo.jp/material/*",
-		"https://commons.nicovideo.jp/material/*",
+		"*://commons.nicovideo.jp/search/*",
+		"*://commons.nicovideo.jp/works/*",
 		"tabs",
 		"bookmarks",
 		"storage"

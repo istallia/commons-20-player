@@ -17,7 +17,7 @@
 			"run_at"  : "document_end"
 		},
 		{
-			"matches" : ["*://commons.nicovideo.jp/material/*"],
+			"matches" : ["*://commons.nicovideo.jp/works/*"],
 			"js"      : ["script-material.js"]
 		}
 	],
@@ -35,6 +35,6 @@
 	],
 	"host_permissions" : [
 		"*://commons.nicovideo.jp/search/*",
-		"*://commons.nicovideo.jp/material/*"
+		"*://commons.nicovideo.jp/works/*"
 	]
 }

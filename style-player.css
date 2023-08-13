@@ -24,6 +24,7 @@ div.ista_cmn_player {
 	padding  : 0.5rem;
 	top      : 0px;
 	left     : 0px;
+	z-index  : 5;
 }
 div[style="pickup_thumb"] div.ista_cmn_player {
 	top  : 0.4rem;
@@ -47,10 +48,10 @@ li.item2 > div.thum > div.ista_cmn_player > a {
 	height  : auto;
 	padding : 0px;
 }
-li[data-commons-kind="tree-item-card"] > div.parentsCardArea div.ista_cmn_player {
+ul.carouselContentsCardList div.ista_cmn_player {
 	top : 1rem;
 }
-ul.childrenContentsCardList > li.childrenItem div.ista_cmn_player {
+ul.childrenContentsCardList div.ista_cmn_player {
 	top : 1rem;
 }
 .ista_cmn_player_parent > div.ista_cmn_player > a {

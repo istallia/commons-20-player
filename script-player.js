@@ -116,11 +116,12 @@ const appendPlayer = parent => {
 	const title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a, a.title_link[href], div.thumbnailBoxListTitle > a, div.contentArea > a');
 	if (!title_element) return;
 	/* 素材種別を判定 */
-	let thumb_el = parent.querySelector('a img[src]')
+	let thumb_el = parent.querySelector('a img[src]');
 	if (thumb_el === null) return;
-	let thumb_url = thumb_el.getAttribute('src');
-	thumb_url     = thumb_url.slice(-11, -4);
-	if (thumb_url.slice(0,5) !== 'audio') return;
+	const thumb_url     = thumb_el.getAttribute('src');
+	const thumb_url_obj = new URL(thumb_url, 'https://commons.nicovideo.jp');
+	console.log([thumb_url, thumb_url_obj.pathname.split('/').pop()]);
+	if (!thumb_url_obj.pathname.split('/').pop().startsWith('audio')) return;
 	/* コモンズIDを取り出す */
 	const thumb_id = parent.querySelector('a').getAttribute('href').match(/(?<=\bnc)\d+/)[0];
 	/* 素材種別に合わせて音量を設定 */
@@ -171,18 +172,18 @@ const appendPlayer = parent => {
 /* --- 読み込み時の処理 --- */
 const addPlayerToCards = () => {
 	const img_list = [
-		'a[href*="/works/nc"] img[src$="audio00.png"]',
-		'a[href*="/works/nc"] img[src$="audio01.png"]',
-		'a[href*="/works/nc"] img[src$="audio02.png"]',
-		'a[href*="/works/nc"] img[src$="audio03.png"]',
-		'a[href*="/material/nc"] img[src$="audio00.png"]',
-		'a[href*="/material/nc"] img[src$="audio01.png"]',
-		'a[href*="/material/nc"] img[src$="audio02.png"]',
-		'a[href*="/material/nc"] img[src$="audio03.png"]',
-		'a[href*="/tree/nc"] img[src$="audio00.png"]',
-		'a[href*="/tree/nc"] img[src$="audio01.png"]',
-		'a[href*="/tree/nc"] img[src$="audio02.png"]',
-		'a[href*="/tree/nc"] img[src$="audio03.png"]'
+		'a[href*="/works/nc"] img[src*="/audio00.png"]',
+		'a[href*="/works/nc"] img[src*="/audio01.png"]',
+		'a[href*="/works/nc"] img[src*="/audio02.png"]',
+		'a[href*="/works/nc"] img[src*="/audio03.png"]',
+		'a[href*="/material/nc"] img[src*="/audio00.png"]',
+		'a[href*="/material/nc"] img[src*="/audio01.png"]',
+		'a[href*="/material/nc"] img[src*="/audio02.png"]',
+		'a[href*="/material/nc"] img[src*="/audio03.png"]',
+		'a[href*="/tree/nc"] img[src*="/audio00.png"]',
+		'a[href*="/tree/nc"] img[src*="/audio01.png"]',
+		'a[href*="/tree/nc"] img[src*="/audio02.png"]',
+		'a[href*="/tree/nc"] img[src*="/audio03.png"]'
 	];
 	let ista_divs = [... document.querySelectorAll(img_list.join(','))];
 	// console.log(ista_divs);
@@ -193,7 +194,7 @@ const addPlayerToCards = () => {
 			appendPlayer(ista_divs[i].parentNode.parentNode);
 		}
 	}
-	const target = document.querySelector("#index_box, #index_content, section.searchCardsArea, div.materialsContentsArea, div.tree-view, section.p-contentsTreeViewPage, section.p-treeParentsPage");
+	const target = document.querySelector("div.indexContentsArea, div.l-globalMain, section.searchCardsArea, div.materialsContentsArea, div.tree-view, section.p-contentsTreeViewPage, section.p-treeParentsPage");
 	if (target && !target.classList.contains('ista-observing')) {
 		const observer = new MutationObserver(records => {
 			if (records[0].addedNodes.length > 0) setTimeout(addPlayerToCards, 0);

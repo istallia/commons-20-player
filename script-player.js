@@ -42,32 +42,30 @@ let ista_bgm_filter      = false;
 
 /* --- 指定番号の音声を再生する関数 --- */
 const playAudio = (num, event) => {
+	/* インデックスを検証 */
+	if (num >= ista_audio_obj.length || num < 0) return;
 	/* BGMフィルタが有効ならBGM以外は通さない */
 	if (ista_audio_type[num] !== 'audio01' && ista_autoplaying && ista_bgm_filter) {
-		if (event?.button_ctrl === 'back') {
-			playAudio(num-1, {button_ctrl:event.button_ctrl});
-		} else {
-			playAudio(num+1, {
-				button_ctrl : event?.button_ctrl || null
-			});
+		console.log(`ista_audio_type[${num}] !== ${ista_audio_type[num]}`);
+		if (event?.button_ctrl === 'back' || event?.button_ctrl === 'next') {
+			const requested_num = event.button_ctrl === 'back' ? num+1 : num-1;
+			playAudio(requested_num, {button_ctrl:event.button_ctrl});
+			return;
 		}
-		return;
 	}
-	/* インデックスを検証 */
-	if (num >= ista_audio_obj.length && num < 0) return;
 	/* 音量の確認処理を挟む */
 	browser.runtime.sendMessage({ctrl : 'get-preferences'}, params => {
 		sessionStorage.setItem('ista_volume_master', params['volume_master']);
 		sessionStorage.setItem('ista_volume_bgm'   , params['volume_bgm']);
 		sessionStorage.setItem('ista_volume_se'    , params['volume_se']);
-    ista_volume_master = Number(sessionStorage.getItem('ista_volume_master'));
-    ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm'));
-    ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se'));
+		ista_volume_master = Number(sessionStorage.getItem('ista_volume_master'));
+		ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm'));
+		ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se'));
 		/* 素材種別に合わせて音量を設定 */
 		let ista_volume = ista_volume_se;
 		if (ista_audio_type[num] === 'audio01') ista_volume = ista_volume_bgm;
 		ista_volume *= ista_volume_master / 100;
-		/* 再生中の音声を停止 */
+		/* 再生中の音声を停止 (Audio読み込み済みの場合) */
 		if (ista_last_play_index !== null && ista_audio_obj[ista_last_play_index] !== null) {
 			ista_audio_obj[ista_last_play_index].pause();
 			ista_audio_obj[ista_last_play_index].currentTime = 0;
@@ -80,8 +78,68 @@ const playAudio = (num, event) => {
 			ista_audio_link[ista_last_play_index].innerText = '試聴';
 			ista_audio_link[ista_last_play_index].classList.remove('nowplaying');
 		}
-		/* Audioオブジェクトを用意して再生 */
-		if (ista_audio_obj[num] === null) return;
+		/* コモンズIDを取り出す */
+		const thumb_id = ista_audio_nc_id[num].slice(2);
+		/* Audioがない場合、トークン取得→Audio取得 */
+		ista_audio_link[num].innerText = '通信中';
+		ista_audio_link[num].classList.add('nowplaying');
+		if (ista_audio_obj[num] === null) {
+			fetch(`https://public-api.commons.nicovideo.jp/v1/materials/${thumb_id}/preview-session`, {
+				credentials : 'include',
+				method      : 'POST'
+			})
+			.then(response => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					ista_audio_link[num].innerText = '試聴不可';
+					ista_audio_link[num].classList.remove('nowplaying');
+					ista_audio_obj[num] = null;
+					ista_nowplaying     = false;
+					throw new Error(response.statusText);
+				}
+			})
+			.then(data => {
+				/* Audioオブジェクトを用意して再生 */
+				const audio_url     = `https://deliver.commons.nicovideo.jp/audio_preview/1/nc${thumb_id}?token=${data.data.token}&time=${data.data.time}`;
+				const audio_obj     = new Audio(audio_url);
+				audio_obj.volume    = ista_volume / 100;
+				ista_audio_obj[num] = audio_obj;
+				audio_obj.addEventListener('ended', () => {
+					ista_audio_link[num].innerText = '試聴';
+					ista_audio_link[num].classList.remove('nowplaying');
+					ista_nowplaying = false;
+					if (ista_autoplaying && num < ista_audio_obj.length - 1) {
+						playAudio(num+1, null);
+					} else if (ista_autoplaying) {
+						browser.runtime.sendMessage({
+							ctrl        : 'update-title',
+							title       : ista_audio_title[ista_last_play_index],
+							commons_id  : ista_audio_nc_id[ista_last_play_index],
+							now_playing : false
+						});
+					}
+				});
+				audio_obj.play().then(() => {
+					ista_audio_link[num].innerText = '再生中';
+					ista_nowplaying                = true;
+					browser.runtime.sendMessage({
+						ctrl        : 'update-title',
+						title       : ista_audio_title[num],
+						commons_id  : ista_audio_nc_id[num]
+					});
+				}, () => {
+					ista_audio_link[num].innerText = '試聴不可';
+					ista_audio_link[num].classList.remove('nowplaying');
+					ista_audio_obj[num] = null;
+					ista_nowplaying     = false;
+					if (ista_autoplaying && num < ista_audio_obj.length - 1) playAudio(num+1, null);
+				});
+			});
+			ista_last_play_index = num;
+			return;
+		}
+		/* Audioオブジェクトを用意して再生 (Audio読み込み済みの場合) */
 		ista_audio_obj[num].volume     = ista_volume / 100;
 		ista_audio_link[num].innerText = '通信中';
 		ista_audio_link[num].classList.add('nowplaying');
@@ -120,38 +178,17 @@ const appendPlayer = parent => {
 	if (thumb_el === null) return;
 	const thumb_url     = thumb_el.getAttribute('src');
 	const thumb_url_obj = new URL(thumb_url, 'https://commons.nicovideo.jp');
-	console.log([thumb_url, thumb_url_obj.pathname.split('/').pop()]);
+	const thumb_name    = thumb_url_obj.pathname.split('/').pop().slice(0, -4);
+	// console.log([thumb_url, thumb_url_obj.pathname.split('/').pop()]);
 	if (!thumb_url_obj.pathname.split('/').pop().startsWith('audio')) return;
 	/* コモンズIDを取り出す */
 	const thumb_id = parent.querySelector('a').getAttribute('href').match(/(?<=\bnc)\d+/)[0];
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
-	if (thumb_url === 'audio01') ista_volume = ista_volume_bgm;
+	if (thumb_name === 'audio01') ista_volume = ista_volume_bgm;
 	ista_volume *= ista_volume_master / 100;
-	/* Audioを用意 */
-	let audio_obj     = new Audio();
-	audio_obj.volume  = ista_volume / 100;
-	audio_obj.preload = 'none';
-	audio_obj.src     = 'https://commons.nicovideo.jp/api/preview/get?cid=' + thumb_id;
-	let ended_func = (n, event) => {
-		ista_audio_link[n].innerText = '試聴';
-		ista_audio_link[n].classList.remove('nowplaying');
-		if (ista_autoplaying && n < ista_audio_obj.length - 1) {
-			playAudio(n+1, null);
-			return;
-		} else if (ista_autoplaying) {
-			browser.runtime.sendMessage({
-				ctrl        : 'update-title',
-				title       : ista_audio_title[ista_last_play_index],
-				commons_id  : ista_audio_nc_id[ista_last_play_index],
-				now_playing : false
-			});
-		}
-		ista_nowplaying = false;
-	};
-	audio_obj.addEventListener('ended', ended_func.bind(this, ista_audio_obj.length));
-	ista_audio_obj.push(audio_obj);
-	ista_audio_type.push(thumb_url);
+	ista_audio_obj.push(null);
+	ista_audio_type.push(thumb_name);
 	ista_audio_nc_id.push('nc'+thumb_id);
 	ista_audio_title.push(title_element.innerText);
 	/* テキストリンクをdivに入れて追加 */
@@ -220,9 +257,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		sessionStorage.setItem('ista_volume_master', request.master);
 		sessionStorage.setItem('ista_volume_bgm'   , request.bgm);
 		sessionStorage.setItem('ista_volume_se'    , request.se);
-    ista_volume_master = Number(sessionStorage.getItem('ista_volume_master'));
-    ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm'));
-    ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se'));
+		ista_volume_master = Number(sessionStorage.getItem('ista_volume_master'));
+		ista_volume_bgm    = Number(sessionStorage.getItem('ista_volume_bgm'));
+		ista_volume_se     = Number(sessionStorage.getItem('ista_volume_se'));
 		/* 音量の調整 */
 		let ista_volume = ista_volume_se;
 		if (ista_audio_type[ista_last_play_index] === 'audio01') ista_volume = ista_volume_bgm;

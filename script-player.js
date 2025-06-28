@@ -170,7 +170,7 @@ const appendPlayer = parent => {
 	if (parent.classList.contains('ista_cmn_player_parent')) return;
 	/* タイトル要素を取得 */
 	let alt_parent = parent;
-	if (alt_parent.tagName.toLowerCase() !== 'li') alt_parent = alt_parent.parentNode;
+	// if (alt_parent.tagName.toLowerCase() !== 'li') alt_parent = alt_parent.parentNode;
 	const title_element = alt_parent.querySelector('span.searchTitle, span.materialTitle, div.thumb_list_title > a, h3 > a, a.title_link[href], div.thumbnailBoxListTitle > a, div.contentArea > a');
 	if (!title_element) return;
 	/* 素材種別を判定 */
@@ -182,7 +182,9 @@ const appendPlayer = parent => {
 	// console.log([thumb_url, thumb_url_obj.pathname.split('/').pop()]);
 	if (!thumb_url_obj.pathname.split('/').pop().startsWith('audio')) return;
 	/* コモンズIDを取り出す */
-	const thumb_id = parent.querySelector('a').getAttribute('href').match(/(?<=\bnc)\d+/)[0];
+	const thumb_id = parent.tagName.toLowerCase() === 'a'
+		? parent.getAttribute('href').match(/(?<=\bnc)\d+/)[0]
+		: parent.querySelector('a').getAttribute('href').match(/(?<=\bnc)\d+/)[0];
 	/* 素材種別に合わせて音量を設定 */
 	let ista_volume = ista_volume_se;
 	if (thumb_name === 'audio01') ista_volume = ista_volume_bgm;
@@ -225,10 +227,11 @@ const addPlayerToCards = () => {
 	let ista_divs = [... document.querySelectorAll(img_list.join(','))];
 	// console.log(ista_divs);
 	for (let i in ista_divs) {
-		if (ista_divs[i].parentNode.parentNode.tagName.toLowerCase() === 'a') {
-			appendPlayer(ista_divs[i].parentNode.parentNode.parentNode);
+		const cardItem = ista_divs[i].parentNode.parentNode;
+		if (cardItem.tagName.toLowerCase() === 'a' && !cardItem.classList.contains('searchItemCard')) {
+			appendPlayer(cardItem.parentNode);
 		} else {
-			appendPlayer(ista_divs[i].parentNode.parentNode);
+			appendPlayer(cardItem);
 		}
 	}
 	const target = document.querySelector("div.indexContentsArea, div.l-globalMain, section.searchCardsArea, div.materialsContentsArea, div.tree-view, section.p-contentsTreeViewPage, section.p-treeParentsPage");

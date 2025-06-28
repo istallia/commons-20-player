@@ -126,7 +126,8 @@ const playAudio = (num, event) => {
 					browser.runtime.sendMessage({
 						ctrl        : 'update-title',
 						title       : ista_audio_title[num],
-						commons_id  : ista_audio_nc_id[num]
+						commons_id  : ista_audio_nc_id[num],
+						now_playing : true
 					});
 				}, () => {
 					ista_audio_link[num].innerText = '試聴不可';

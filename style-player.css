@@ -59,6 +59,9 @@ ul.childrenContentsCardList div.ista_cmn_player {
 	background-color : white !important;
 	color            : #111;
 }
+.worksFullCard > div.ista_cmn_player {
+	top : 1rem;
+}
 .ista_cmn_player_parent > div.ista_cmn_player > a.nowplaying {
 	background-color : #9fcfff !important;
 	font-weight      : bold !important;

@@ -158,10 +158,8 @@ const addMiniPlayer = (tab_id, title, commons_id, bgm_filter = false, now_playin
 				const img      = mini_player.querySelector('img[title="'+icon_captions['icon_play']+'"], img[title="'+icon_captions['icon_pause']+'"]');
 				span.innerText = response.title;
 				span.setAttribute('commons_id', response.commons_id);
-				icon_type = 'icon_play';
-				if (response.now_playing) icon_type = 'icon_pause';
-				img.src   = icons[icon_type];
-				img.title = icon_captions[icon_type];
+				img.src   = icons['icon_pause'];
+				img.title = icon_captions['icon_pause'];
 				updateBookmarkButton(id, response.commons_id);
 			}
 		});
@@ -198,6 +196,9 @@ const nextAudio = event => {
 		span.innerText = response.title;
 		span.setAttribute('commons_id', response.commons_id);
 		updateBookmarkButton(tab_id, response.commons_id);
+		const playPauseImg = img.parentNode.querySelector('img[title="'+icon_captions['icon_play']+'"], img[title="'+icon_captions['icon_pause']+'"]');
+		playPauseImg.src   = icons['icon_pause'];
+		playPauseImg.title = icon_captions['icon_pause'];
 	});
 };
 const backAudio = event => {
@@ -208,6 +209,9 @@ const backAudio = event => {
 		span.innerText = response.title;
 		span.setAttribute('commons_id', response.commons_id);
 		updateBookmarkButton(tab_id, response.commons_id);
+		const playPauseImg = img.parentNode.querySelector('img[title="'+icon_captions['icon_play']+'"], img[title="'+icon_captions['icon_pause']+'"]');
+		playPauseImg.src   = icons['icon_pause'];
+		playPauseImg.title = icon_captions['icon_pause'];
 	});
 };
 

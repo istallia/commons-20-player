@@ -321,7 +321,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 			let icon_type  = 'icon_play';
 			if (request.now_playing) icon_type = 'icon_pause';
 			span.setAttribute('commons_id', request.commons_id);
-			const img = mini_player.querySelector('img[title="' + icon_captions[icon_type] + '"]');
+			const img = mini_player.querySelector('img[title="'+icon_captions['icon_play']+'"], img[title="'+icon_captions['icon_pause']+'"]');
 			img.src   = icons[icon_type];
 			img.title = icon_captions[icon_type];
 		}

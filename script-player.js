@@ -86,7 +86,12 @@ const playAudio = (num, event) => {
 		if (ista_audio_obj[num] === null) {
 			fetch(`https://public-api.commons.nicovideo.jp/v1/materials/${thumb_id}/preview-session`, {
 				credentials : 'include',
-				method      : 'POST'
+				method      : 'POST',
+				headers     : {
+					'x-frontend-id'      : '41',
+					'x-frontend-version' : '1',
+					'x-requested-with'   : 'nicommons'
+				}
 			})
 			.then(response => {
 				if (response.ok) {

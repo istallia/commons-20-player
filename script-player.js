@@ -106,7 +106,7 @@ const playAudio = (num, event) => {
 			})
 			.then(data => {
 				/* Audioオブジェクトを用意して再生 */
-				const audio_url     = `https://deliver.commons.nicovideo.jp/audio_preview/1/nc${thumb_id}?token=${data.data.token}&time=${data.data.time}`;
+				const audio_url     = `https://deliver.commons.nicovideo.jp/audio_preview/nc${thumb_id}?token=${data.data.token}&time=${data.data.time}`;
 				const audio_obj     = new Audio(audio_url);
 				audio_obj.volume    = ista_volume / 100;
 				ista_audio_obj[num] = audio_obj;

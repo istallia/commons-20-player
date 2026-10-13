@@ -1,0 +1,45 @@
+{
+	"manifest_version": 3,
+	"name": "コモンズ20プレイヤー",
+	"version": "0.4.5",
+	"description": "ニコニ・コモンズのBGM/SE素材を一覧ページで再生できるようにする拡張機能",
+	"author": "istallia",
+	"icons": {
+		"32": "icon_32.png",
+		"48": "icon_48.png",
+		"128": "icon_128.png"
+	},
+	"content_scripts": [
+		{
+			"matches": ["*://commons.nicovideo.jp/*"],
+			"js": ["script-player.js"],
+			"css": ["style-player.css"],
+			"run_at": "document_end"
+		},
+		{
+			"matches": ["*://commons.nicovideo.jp/works/*"],
+			"js": ["script-material.js"]
+		}
+	],
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"action": {
+		"default_title": "コモンズ20プレイヤー",
+		"default_popup": "popup.html"
+	},
+	"permissions": [
+		"tabs",
+		"bookmarks",
+		"storage"
+	],
+	"host_permissions": [
+		"*://commons.nicovideo.jp/search/*",
+		"*://commons.nicovideo.jp/works/*"
+	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{e222740e-8427-4c51-8e38-4cc74d03f7ff}"
+		}
+	}
+}
